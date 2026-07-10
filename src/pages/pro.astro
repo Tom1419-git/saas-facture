@@ -1,0 +1,146 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Les liens Stripe (à vérifier avec l'utilisateur)
+const linkMonthly = "https://buy.stripe.com/4gM28j7m36mW2Co2rwfYY00";
+const linkYearly = "https://buy.stripe.com/9B67sDeOvaDcfpa4zEfYY01";
+const linkLifetime = "https://buy.stripe.com/8x2cMX35N6mWb8UgimfYY02";
+
+const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
+---
+
+<Layout title="FactureArtisan | Version Pro">
+  <div class="container" style="padding: 60px 24px; text-align: center;">
+    <h1 class="text-gradient" style="font-size: 3rem; margin-bottom: 20px;">Passez à la vitesse supérieure</h1>
+    <p style="color: var(--text-muted); font-size: 1.2rem; max-width: 600px; margin: 0 auto 60px;">
+      Débloquez la création illimitée de factures, ajoutez votre logo et sauvegardez tout dans le cloud sécurisé.
+    </p>
+
+    <div class="pricing-grid">
+      <!-- Mensuel -->
+      <div class="glass-card pricing-card">
+        <h3>Mensuel</h3>
+        <div class="price">5 CHF<span>/mois</span></div>
+        <p class="desc">Pour tester à votre rythme, sans engagement.</p>
+        <ul class="features">
+          <li>✔️ Factures illimitées</li>
+          <li>✔️ Sauvegarde Cloud</li>
+          <li>✔️ Logo personnalisable</li>
+        </ul>
+        <a href={linkMonthly} class="btn btn-secondary" style="width: 100%;">Choisir Mensuel</a>
+      </div>
+
+      <!-- Annuel (Recommandé) -->
+      <div class="glass-card pricing-card highlight">
+        <div class="badge">Le plus populaire</div>
+        <h3 style="color: var(--primary);">Annuel</h3>
+        <div class="price">39 CHF<span>/an</span></div>
+        <p class="desc">Économisez plus de 30%. L'esprit tranquille pour toute l'année.</p>
+        <ul class="features">
+          <li>✔️ Factures illimitées</li>
+          <li>✔️ Sauvegarde Cloud</li>
+          <li>✔️ Logo personnalisable</li>
+          <li>✔️ Support prioritaire</li>
+        </ul>
+        <a href={linkYearly} class="btn btn-primary" style="width: 100%;">Prendre l'Annuel</a>
+      </div>
+
+      <!-- À vie -->
+      <div class="glass-card pricing-card">
+        <h3>À vie (Lifetime)</h3>
+        <div class="price">99 CHF<span>/unique</span></div>
+        <p class="desc">Payez une seule fois. Profitez-en pour l'éternité.</p>
+        <ul class="features">
+          <li>✔️ Factures illimitées</li>
+          <li>✔️ Sauvegarde Cloud</li>
+          <li>✔️ Logo personnalisable</li>
+          <li>✔️ Mises à jour à vie</li>
+        </ul>
+        <a href={linkLifetime} class="btn btn-secondary" style="width: 100%;">Débloquer à vie</a>
+      </div>
+    </div>
+    
+    <div style="margin-top: 60px;">
+      <a href="/dashboard" style="color: var(--text-muted); text-decoration: underline;">Retour au tableau de bord</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  
+  .pricing-card {
+    padding: 40px 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .highlight {
+    border-color: var(--primary);
+    box-shadow: 0 0 30px var(--primary-glow);
+    transform: scale(1.05);
+  }
+  
+  .badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  
+  .price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 20px 0 10px;
+    color: var(--text-main);
+  }
+  
+  .price span {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  
+  .desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 30px;
+    min-height: 50px;
+  }
+  
+  .features {
+    list-style: none;
+    margin-bottom: 40px;
+    flex-grow: 1;
+  }
+  
+  .features li {
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+  }
+  
+  @media (max-width: 900px) {
+    .pricing-grid {
+      grid-template-columns: 1fr;
+    }
+    .highlight {
+      transform: none;
+    }
+  }
+</style>
