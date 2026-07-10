@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { pdf, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { pdf, Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { supabase } from '../lib/supabase';
 
 // --- PDF STYLES ---
@@ -28,44 +28,80 @@ const styles = StyleSheet.create({
 });
 
 // --- PDF DOCUMENT COMPONENT ---
-const InvoiceDocument = ({ data, isPro }: { data: any, isPro: boolean }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      {/* Watermark for non-pro users */}
-      {!isPro && (
-        <Text style={{
-          position: 'absolute',
-          top: '45%',
-          left: '10%',
-          opacity: 0.08,
-          fontSize: 40,
-          transform: 'rotate(-45deg)',
-          color: '#000',
-          zIndex: -1
-        }}>
-          Généré avec FactureArtisan.ch
-        </Text>
-      )}
-      
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>FACTURE</Text>
-          <Text style={styles.muted}>N° {data.invoiceNumber || '2023-001'}</Text>
-          <Text style={styles.muted}>Date: {data.date || new Date().toLocaleDateString('fr-CH')}</Text>
-        </View>
-        <View style={{ textAlign: 'right' }}>
-          <Text style={styles.bold}>{data.senderName || 'Votre Entreprise'}</Text>
-          <Text>{data.senderAddress || 'Votre Adresse'}</Text>
-          <Text>{data.senderEmail || 'email@entreprise.com'}</Text>
-          <Text>{data.senderIban ? `IBAN: ${data.senderIban}` : ''}</Text>
-        </View>
-      </View>
+const InvoiceDocument = ({ data, isPro }: { data: any, isPro: boolean }) => {
+  const isLogo = data.template === 'logo' || data.template === 'enveloppe';
+  const isEnveloppe = data.template === 'enveloppe';
+  
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        {/* Watermark for non-pro users */}
+        {!isPro && (
+          <Text style={{
+            position: 'absolute',
+            top: '45%',
+            left: '10%',
+            opacity: 0.08,
+            fontSize: 40,
+            transform: 'rotate(-45deg)',
+            color: '#000',
+            zIndex: -1
+          }}>
+            Généré avec facture.mayoraz-net.ch
+          </Text>
+        )}
+        
+        {isEnveloppe ? (
+          // ENVELOPPE LAYOUT (Swiss C5 Window right)
+          <View style={{ marginBottom: 40, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <View style={{ width: '45%' }}>
+              {isLogo && data.logoBase64 && <Image src={data.logoBase64} style={{ maxHeight: 60, maxWidth: 150, marginBottom: 15, objectFit: 'contain' }} />}
+              <Text style={styles.title}>FACTURE</Text>
+              <Text style={styles.muted}>N° {data.invoiceNumber || '2023-001'}</Text>
+              <Text style={styles.muted}>Date: {data.date || new Date().toLocaleDateString('fr-CH')}</Text>
+            </View>
+            <View style={{ width: '50%', marginTop: 20, paddingLeft: 20 }}>
+              <Text style={{ fontSize: 8, color: '#888', marginBottom: 5, borderBottomWidth: 1, borderBottomColor: '#eee', paddingBottom: 3 }}>
+                {data.senderName} - {data.senderAddress.replace(/\n/g, ', ')}
+              </Text>
+              <Text style={[styles.bold, { fontSize: 12 }]}>{data.clientName || 'Nom du Client'}</Text>
+              <Text style={{ fontSize: 11, lineHeight: 1.4 }}>{data.clientAddress || 'Adresse du client'}</Text>
+            </View>
+          </View>
+        ) : (
+          // STANDARD / LOGO LAYOUT
+          <View style={styles.header}>
+            <View>
+              {isLogo && data.logoBase64 && <Image src={data.logoBase64} style={{ maxHeight: 60, maxWidth: 150, marginBottom: 15, objectFit: 'contain' }} />}
+              <Text style={styles.title}>FACTURE</Text>
+              <Text style={styles.muted}>N° {data.invoiceNumber || '2023-001'}</Text>
+              <Text style={styles.muted}>Date: {data.date || new Date().toLocaleDateString('fr-CH')}</Text>
+            </View>
+            <View style={{ textAlign: 'right' }}>
+              <Text style={styles.bold}>{data.senderName || 'Votre Entreprise'}</Text>
+              <Text>{data.senderAddress || 'Votre Adresse'}</Text>
+              <Text>{data.senderEmail || 'email@entreprise.com'}</Text>
+              <Text>{data.senderIban ? `IBAN: ${data.senderIban}` : ''}</Text>
+            </View>
+          </View>
+        )}
 
-      <View style={[styles.section, { marginTop: 20 }]}>
-        <Text style={[styles.bold, { marginBottom: 5 }]}>Facturé à :</Text>
-        <Text>{data.clientName || 'Nom du Client'}</Text>
-        <Text>{data.clientAddress || 'Adresse du client'}</Text>
-      </View>
+        {isEnveloppe && (
+          <View style={{ marginBottom: 30 }}>
+            <Text style={styles.bold}>Vos coordonnées :</Text>
+            <Text>{data.senderName || 'Votre Entreprise'}</Text>
+            <Text>{data.senderEmail || 'email@entreprise.com'}</Text>
+            <Text>{data.senderIban ? `IBAN: ${data.senderIban}` : ''}</Text>
+          </View>
+        )}
+
+        {!isEnveloppe && (
+          <View style={[styles.section, { marginTop: 20 }]}>
+            <Text style={[styles.bold, { marginBottom: 5 }]}>Facturé à :</Text>
+            <Text>{data.clientName || 'Nom du Client'}</Text>
+            <Text>{data.clientAddress || 'Adresse du client'}</Text>
+          </View>
+        )}
 
       <View style={styles.table}>
         <View style={styles.tableHeader}>
@@ -123,7 +159,9 @@ export default function InvoiceApp() {
     clientAddress: '',
     taxRate: 8.1,
     notes: '',
-    items: [{ desc: 'Prestation de service', qty: 1, price: 100 }]
+    items: [{ desc: 'Prestation de service', qty: 1, price: 100 }],
+    logoBase64: null as string | null,
+    template: 'standard' // 'standard', 'logo', 'enveloppe'
   });
 
   const [isClient, setIsClient] = useState(false);
@@ -152,7 +190,32 @@ export default function InvoiceApp() {
     checkProStatus();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isPro) {
+      alert("L'ajout d'un logo est une fonctionnalité de la version Pro.");
+      e.target.value = '';
+      return;
+    }
+    
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setData({ ...data, logoBase64: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleTemplateChange = (templateId: string) => {
+    if (!isPro && templateId !== 'standard') {
+      alert("Ce modèle est exclusif à la version Pro.");
+      return;
+    }
+    setData({ ...data, template: templateId });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
@@ -235,8 +298,27 @@ export default function InvoiceApp() {
         <h2>Éditeur de Facture</h2>
         
         <div className="form-grid">
-          <div className="form-section">
+          <div class="form-section">
             <h3>Vos Informations</h3>
+            
+            <label style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Logo de l'entreprise</span>
+              {!isPro && <span style={{ fontSize: '0.7rem', color: 'var(--primary)', background: 'rgba(94,106,210,0.1)', padding: '2px 6px', borderRadius: 4 }}>PRO</span>}
+            </label>
+            <input 
+              type="file" 
+              accept="image/png, image/jpeg" 
+              onChange={handleLogoUpload} 
+              style={{ padding: '8px', border: '1px dashed var(--border)', width: '100%' }}
+              disabled={!isPro}
+            />
+            {data.logoBase64 && (
+              <div style={{ marginTop: 10, textAlign: 'center' }}>
+                <img src={data.logoBase64} alt="Logo" style={{ maxHeight: 50, maxWidth: '100%', objectFit: 'contain' }} />
+                <button onClick={() => setData({...data, logoBase64: null})} className="btn" style={{ fontSize: '0.8rem', padding: '4px 8px', marginTop: 5 }}>Retirer</button>
+              </div>
+            )}
+
             <label>Nom de l'entreprise</label>
             <input type="text" name="senderName" value={data.senderName} onChange={handleChange} placeholder="Mon Entreprise Sàrl" />
             
@@ -299,7 +381,22 @@ export default function InvoiceApp() {
       <div className="invoice-sidebar">
         <div className="glass-card" style={{ padding: 30, position: 'sticky', top: 100 }}>
           <h3 style={{ marginBottom: 20 }}>Résumé</h3>
-          <div style={{ marginBottom: 30 }}>
+          
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ display: 'block', marginBottom: 5 }}>Modèle de facture</label>
+            <select 
+              className="input"
+              value={data.template} 
+              onChange={(e) => handleTemplateChange(e.target.value)}
+              style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text-main)' }}
+            >
+              <option value="standard">Standard (Gratuit)</option>
+              <option value="logo">Pro : Élégant + Logo</option>
+              <option value="enveloppe">Pro : Format Enveloppe Suisse (C5)</option>
+            </select>
+          </div>
+
+          <div style={{ marginBottom: 30, borderTop: '1px solid var(--border)', paddingTop: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
               <span>Total à facturer :</span>
               <strong>{total.toFixed(2)} CHF</strong>
