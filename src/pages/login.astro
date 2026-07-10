@@ -51,8 +51,8 @@ import Layout from '../layouts/Layout.astro';
       errorMsg.style.display = 'block';
     } else {
       // Set a cookie so Astro SSR knows we are authenticated
-      document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${data.session.expires_in}; SameSite=Lax; secure`;
-      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/; max-age=${data.session.expires_in}; SameSite=Lax; secure`;
+      document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${data.session.expires_in}; SameSite=Lax`;
+      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/; max-age=${data.session.expires_in}; SameSite=Lax`;
       
       window.location.href = '/dashboard';
     }
