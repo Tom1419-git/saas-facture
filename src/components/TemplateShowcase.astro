@@ -1,0 +1,302 @@
+---
+// TemplateShowcase.astro
+---
+<div class="templates-showcase" style="margin-bottom: 40px;">
+  <div class="templates-grid">
+    
+    <!-- Modèle Classique (Gratuit) -->
+    <div class="template-card active">
+      <div class="template-preview-wrapper">
+        <div class="mini-invoice standard-invoice">
+          <div class="inv-header">
+            <div class="inv-title">FACTURE</div>
+            <div class="inv-meta">
+              <div class="meta-line"></div>
+              <div class="meta-line short"></div>
+            </div>
+            <div class="inv-logo"></div>
+          </div>
+          <div class="inv-addresses">
+            <div class="address-block">
+              <div class="addr-line bold"></div>
+              <div class="addr-line"></div>
+              <div class="addr-line"></div>
+            </div>
+            <div class="address-block right">
+              <div class="addr-line bold"></div>
+              <div class="addr-line"></div>
+              <div class="addr-line"></div>
+            </div>
+          </div>
+          <div class="inv-table">
+            <div class="table-header"></div>
+            <div class="table-row"></div>
+            <div class="table-row"></div>
+            <div class="table-row"></div>
+          </div>
+          <div class="inv-totals">
+            <div class="total-line"></div>
+            <div class="total-line"></div>
+            <div class="total-line grand"></div>
+          </div>
+        </div>
+      </div>
+      <div class="template-info">
+        <h4>Standard</h4>
+        <span class="badge-free">Gratuit</span>
+      </div>
+    </div>
+
+    <!-- Modèle Premium (Pro) -->
+    <a href="/pro" class="template-card locked">
+      <div class="template-preview-wrapper">
+        <div class="mini-invoice premium-invoice">
+          <div class="premium-accent-top"></div>
+          <div class="inv-header">
+            <div class="inv-logo-circle"></div>
+            <div class="inv-title-right">INVOICE</div>
+          </div>
+          <div class="inv-addresses-premium">
+            <div class="address-box">
+              <div class="box-line bold"></div>
+              <div class="box-line"></div>
+            </div>
+          </div>
+          <div class="inv-table-premium">
+            <div class="table-row-premium"></div>
+            <div class="table-row-premium"></div>
+            <div class="table-row-premium"></div>
+          </div>
+          <div class="inv-totals-premium">
+            <div class="total-box"></div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+        </div>
+      </div>
+      <div class="template-info">
+        <h4>Premium Sombre</h4>
+        <span class="badge-pro">PRO</span>
+      </div>
+    </a>
+
+    <!-- Modèle Épuré (Pro) -->
+    <a href="/pro" class="template-card locked">
+      <div class="template-preview-wrapper">
+        <div class="mini-invoice modern-invoice">
+          <div class="inv-header-split">
+            <div class="inv-logo-large"></div>
+            <div class="inv-details">
+              <div class="inv-line-short"></div>
+              <div class="inv-line-short"></div>
+              <div class="inv-line-short"></div>
+            </div>
+          </div>
+          <div class="inv-body">
+            <div class="modern-header"></div>
+            <div class="modern-row"></div>
+            <div class="modern-row"></div>
+            <div class="modern-footer">
+              <div class="modern-total"></div>
+            </div>
+          </div>
+        </div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+        </div>
+      </div>
+      <div class="template-info">
+        <h4>Épuré + Logo</h4>
+        <span class="badge-pro">PRO</span>
+      </div>
+    </a>
+
+  </div>
+  <p class="showcase-tip">
+    💡 <strong>Astuce :</strong> La personnalisation avancée (couleurs, logo d'entreprise, design) est exclusive à la version Pro.
+  </p>
+</div>
+
+<style>
+  .templates-showcase {
+    width: 100%;
+  }
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    text-align: left;
+  }
+  .template-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+  }
+  .template-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+  .template-card.active {
+    border-color: var(--primary);
+    background: rgba(94, 106, 210, 0.05);
+    box-shadow: 0 0 0 1px var(--primary);
+  }
+  
+  .template-preview-wrapper {
+    height: 140px;
+    background: #0a0a0c;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  
+  /* Mini Invoices Base */
+  .mini-invoice {
+    width: 90px;
+    height: 120px;
+    border-radius: 4px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    position: relative;
+  }
+  .template-card:hover .mini-invoice {
+    transform: scale(1.05) translateY(-2px);
+  }
+  
+  /* Standard Invoice */
+  .standard-invoice { background: #ffffff; border: 1px solid #ddd; }
+  .standard-invoice .inv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .standard-invoice .inv-title { width: 30px; height: 5px; background: #333; margin-bottom: 3px; }
+  .standard-invoice .inv-meta { display: flex; flex-direction: column; gap: 2px; }
+  .standard-invoice .meta-line { width: 25px; height: 2px; background: #bbb; }
+  .standard-invoice .meta-line.short { width: 15px; }
+  .standard-invoice .inv-logo { width: 18px; height: 18px; background: #eee; border-radius: 2px; border: 1px solid #ddd; }
+  
+  .standard-invoice .inv-addresses { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .standard-invoice .address-block { display: flex; flex-direction: column; gap: 2px; width: 45%; }
+  .standard-invoice .address-block.right { align-items: flex-end; }
+  .standard-invoice .addr-line { width: 100%; height: 2px; background: #eee; }
+  .standard-invoice .addr-line.bold { background: #999; margin-bottom: 2px; height: 3px; width: 80%; }
+  
+  .standard-invoice .inv-table { margin-bottom: auto; border: 1px solid #eee; border-radius: 2px; }
+  .standard-invoice .table-header { height: 4px; background: #f5f5f5; border-bottom: 1px solid #eee; }
+  .standard-invoice .table-row { height: 4px; border-bottom: 1px solid #fafafa; margin: 2px 0; background: #fdfdfd; }
+  
+  .standard-invoice .inv-totals { display: flex; flex-direction: column; gap: 2px; align-items: flex-end; margin-top: 4px; }
+  .standard-invoice .total-line { width: 30px; height: 3px; background: #eee; }
+  .standard-invoice .total-line.grand { width: 40px; height: 4px; background: #333; margin-top: 2px; }
+  
+  /* Premium Dark Invoice */
+  .premium-invoice { background: #1a1a24; border: 1px solid #333; padding-top: 12px; }
+  .premium-invoice .premium-accent-top { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--primary); }
+  .premium-invoice .inv-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .premium-invoice .inv-logo-circle { width: 16px; height: 16px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary-glow); }
+  .premium-invoice .inv-title-right { width: 25px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
+  
+  .premium-invoice .inv-addresses-premium { margin-bottom: 10px; }
+  .premium-invoice .address-box { background: rgba(255,255,255,0.03); padding: 4px; border-radius: 2px; border-left: 2px solid var(--primary); display: flex; flex-direction: column; gap: 3px; }
+  .premium-invoice .box-line { width: 60%; height: 2px; background: rgba(255,255,255,0.1); }
+  .premium-invoice .box-line.bold { width: 40%; background: rgba(255,255,255,0.3); }
+  
+  .premium-invoice .inv-table-premium { display: flex; flex-direction: column; gap: 3px; margin-bottom: auto; }
+  .premium-invoice .table-row-premium { height: 6px; background: rgba(255,255,255,0.05); border-radius: 2px; }
+  
+  .premium-invoice .inv-totals-premium { display: flex; justify-content: flex-end; }
+  .premium-invoice .total-box { width: 35px; height: 12px; background: var(--primary); border-radius: 2px; opacity: 0.9; }
+  
+  /* Modern Invoice */
+  .modern-invoice { background: #fafafa; border-left: 5px solid var(--primary); padding: 8px; }
+  .modern-invoice .inv-header-split { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+  .modern-invoice .inv-logo-large { width: 22px; height: 22px; border: 2px solid #ddd; border-radius: 4px; background: #fff; }
+  .modern-invoice .inv-details { display: flex; flex-direction: column; gap: 3px; align-items: flex-end; }
+  .modern-invoice .inv-line-short { width: 20px; height: 2px; background: #ccc; border-radius: 1px; }
+  
+  .modern-invoice .inv-body { flex-grow: 1; background: #fff; border: 1px solid #eee; border-radius: 4px; padding: 4px; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .modern-invoice .modern-header { height: 4px; background: #f0f0f0; margin-bottom: 4px; border-radius: 1px; }
+  .modern-invoice .modern-row { height: 3px; background: #f9f9f9; margin-bottom: 3px; border-radius: 1px; }
+  .modern-invoice .modern-footer { margin-top: auto; border-top: 1px solid #eee; padding-top: 3px; display: flex; justify-content: flex-end; }
+  .modern-invoice .modern-total { width: 20px; height: 4px; background: var(--primary); border-radius: 1px; }
+  
+  /* Lock Overlay */
+  .lock-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 12, 0.6);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: background 0.3s ease;
+  }
+  .template-card:hover .lock-overlay {
+    background: rgba(10, 10, 12, 0.4);
+  }
+  .lock-icon {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+  }
+  .template-card:hover .lock-icon {
+    transform: scale(1.1);
+  }
+  
+  .template-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+  }
+  .template-info h4 {
+    font-size: 0.95rem;
+    margin: 0;
+    font-weight: 600;
+  }
+  .badge-free {
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  .badge-pro {
+    font-size: 0.7rem;
+    background: var(--primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px var(--primary-glow);
+  }
+  .showcase-tip {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 15px;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .templates-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

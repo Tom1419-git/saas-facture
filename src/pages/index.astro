@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import TemplateShowcase from '../components/TemplateShowcase.astro';
 ---
 
 <Layout title="FactureArtisan | Créez vos devis et factures en 2 minutes">
@@ -40,50 +41,7 @@ import Layout from '../layouts/Layout.astro';
       La version gratuite inclut notre modèle Standard. Passez à la version Pro pour débloquer la personnalisation, les couleurs de votre marque et votre logo.
     </p>
     
-    <div class="templates-grid">
-      <!-- Modèle Classique -->
-      <div class="template-card">
-        <div class="template-preview" style="background: #fff; color: #333;">
-          <div style="height: 10px; width: 40%; background: #ddd; margin-bottom: 10px;"></div>
-          <div style="height: 2px; width: 100%; background: #eee; margin-bottom: 10px;"></div>
-          <div style="height: 30px; width: 100%; background: #f5f5f5;"></div>
-        </div>
-        <div class="template-info">
-          <h4>Standard</h4>
-          <span class="badge-free">Gratuit</span>
-        </div>
-      </div>
-
-      <!-- Modèle Premium -->
-      <div class="template-card locked">
-        <div class="template-preview" style="background: #2a2a35; color: #fff;">
-          <div style="height: 15px; width: 30%; background: var(--primary); margin-bottom: 10px; border-radius: 2px;"></div>
-          <div style="height: 2px; width: 100%; background: #444; margin-bottom: 10px;"></div>
-          <div style="height: 30px; width: 100%; background: #333;"></div>
-          <div class="lock-icon">🔒</div>
-        </div>
-        <div class="template-info">
-          <h4>Premium Sombre</h4>
-          <span class="badge-pro">PRO</span>
-        </div>
-      </div>
-
-      <!-- Modèle Épuré -->
-      <div class="template-card locked">
-        <div class="template-preview" style="background: #fdfdfd; border: 1px solid #e0e0e0;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <div style="height: 15px; width: 20%; background: #ccc; border-radius: 50%;"></div>
-            <div style="height: 10px; width: 30%; background: #eee;"></div>
-          </div>
-          <div style="height: 30px; width: 100%; background: #fafafa;"></div>
-          <div class="lock-icon">🔒</div>
-        </div>
-        <div class="template-info">
-          <h4>Épuré + Logo</h4>
-          <span class="badge-pro">PRO</span>
-        </div>
-      </div>
-    </div>
+    <TemplateShowcase />
   </section>
 
   <section class="features container">
@@ -245,64 +203,6 @@ import Layout from '../layouts/Layout.astro';
     color: var(--primary);
     margin-bottom: 16px;
     font-size: 1.3rem;
-  }
-  
-  /* Templates Showcase */
-  .templates-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    text-align: left;
-  }
-  .template-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 15px;
-    color: var(--text-main);
-  }
-  .template-preview {
-    height: 100px;
-    border-radius: 6px;
-    padding: 10px;
-    margin-bottom: 12px;
-    position: relative;
-    overflow: hidden;
-  }
-  .locked .template-preview {
-    opacity: 0.7;
-  }
-  .lock-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2rem;
-    opacity: 0.9;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-  }
-  .template-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .template-info h4 {
-    font-size: 0.95rem;
-    margin: 0;
-  }
-  .badge-free {
-    font-size: 0.7rem;
-    background: #ffffff1a;
-    padding: 3px 8px;
-    border-radius: 12px;
-  }
-  .badge-pro {
-    font-size: 0.7rem;
-    background: var(--primary);
-    color: white;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-weight: bold;
   }
   
   @media (max-width: 900px) {
