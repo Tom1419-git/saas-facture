@@ -27,3 +27,4 @@ pnpm-debug.log*
 CLAUDE.md
 AGENTS.md
 agy.md
+.wrangler/
