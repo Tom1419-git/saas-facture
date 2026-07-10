@@ -16,14 +16,38 @@ await supabase.auth.setSession({
 });
 
 const { data: { user }, error } = await supabase.auth.getUser();
-
-// Vérification de l'administrateur
-// Remplace par ton vrai email d'administration
 const ADMIN_EMAIL = "thomasmayoraz@yahoo.com";
 
 if (error || !user || user.email !== ADMIN_EMAIL) {
   return Astro.redirect('/dashboard');
 }
+
+// ── Fetching Data ─────────────────────────────────────
+// Note: Requires RLS policies on 'profiles' to allow admin to select.
+
+// 1. Total users
+const { count: usersCount } = await supabase
+  .from('profiles')
+  .select('*', { count: 'exact', head: true });
+
+// 2. Pro users
+const { count: proUsersCount } = await supabase
+  .from('profiles')
+  .select('*', { count: 'exact', head: true })
+  .eq('is_pro', true);
+
+// 3. Total invoices (sum of all invoice_count in profiles)
+const { data: profilesData } = await supabase
+  .from('profiles')
+  .select('invoice_count');
+const totalInvoices = profilesData?.reduce((acc, p) => acc + (p.invoice_count || 0), 0) || 0;
+
+// 4. Recent users
+const { data: recentUsers } = await supabase
+  .from('profiles')
+  .select('*')
+  .order('created_at', { ascending: false })
+  .limit(10);
 ---
 
 <Layout title="FactureArtisan | Admin Panel">
@@ -39,19 +63,65 @@ if (error || !user || user.email !== ADMIN_EMAIL) {
     </div>
     
     <div class="features-grid">
+      <!-- Statistiques Globales -->
       <div class="glass-card" style="padding: 30px;">
-        <h3 style="color: var(--primary);">Statistiques Globales</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">Les statistiques viendront se brancher ici une fois les tables Supabase créées (Nombre d'utilisateurs inscrits, Factures générées, Revenus Stripe).</p>
+        <h3 style="color: var(--primary); margin-bottom: 20px;">Statistiques Globales</h3>
+        <div class="stat-row">
+          <span class="stat-label">Utilisateurs inscrits :</span>
+          <span class="stat-value">{usersCount ?? '?'}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Utilisateurs Pro :</span>
+          <span class="stat-value">{proUsersCount ?? '?'}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Factures générées :</span>
+          <span class="stat-value">{totalInvoices}</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Revenus Stripe :</span>
+          <span class="stat-value" style="color: var(--text-muted); font-size: 0.85rem;">En attente de l'API</span>
+        </div>
+        
+        {profilesData === null && (
+           <p style="color: var(--danger); font-size: 0.8rem; margin-top: 15px;">
+             ⚠️ Impossible de lire les profils. Vérifiez les règles RLS de Supabase.
+           </p>
+        )}
       </div>
       
-      <div class="glass-card" style="padding: 30px;">
-        <h3 style="color: var(--primary);">Gestion des Utilisateurs</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">En cours de développement...</p>
-      </div>
-      
-      <div class="glass-card" style="padding: 30px;">
-        <h3 style="color: var(--primary);">Outils Rapides</h3>
-        <button class="btn btn-secondary" style="width: 100%; margin-top: 15px;">Purger le cache</button>
+      <!-- Gestion Utilisateurs -->
+      <div class="glass-card" style="padding: 30px; grid-column: span 2;">
+        <h3 style="color: var(--primary); margin-bottom: 20px;">Derniers Utilisateurs (Profiles)</h3>
+        
+        {recentUsers && recentUsers.length > 0 ? (
+          <div style="overflow-x: auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID Profil</th>
+                  <th>Date d'inscription</th>
+                  <th>Statut Pro</th>
+                  <th>Factures (Quota)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentUsers.map(u => (
+                  <tr>
+                    <td style="font-family: monospace; font-size: 0.8rem;">{u.id.split('-')[0]}...</td>
+                    <td>{new Date(u.created_at).toLocaleDateString('fr-CH')}</td>
+                    <td>
+                      {u.is_pro ? <span class="badge badge-pro">PRO</span> : <span class="badge badge-free">Gratuit</span>}
+                    </td>
+                    <td>{u.invoice_count} / {u.is_pro ? '∞' : '3'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Aucun utilisateur trouvé ou accès refusé par RLS.</p>
+        )}
       </div>
     </div>
   </div>
@@ -63,9 +133,65 @@ if (error || !user || user.email !== ADMIN_EMAIL) {
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
   }
+  
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat-row:last-child {
+    border-bottom: none;
+  }
+  .stat-label {
+    color: var(--text-muted);
+  }
+  .stat-value {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .admin-table th {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  .badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+  .badge-free {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+  }
+  .badge-pro {
+    background: rgba(46, 213, 115, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(46, 213, 115, 0.4);
+  }
+  
   @media (max-width: 900px) {
     .features-grid {
       grid-template-columns: 1fr;
     }
+    .glass-card {
+      grid-column: span 1 !important;
+    }
   }
 </style>
+
