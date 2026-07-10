@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+import InvoiceApp from '../components/InvoiceApp';
+
+// Server-side authentication check
+const accessToken = Astro.cookies.get('sb-access-token');
+const refreshToken = Astro.cookies.get('sb-refresh-token');
+
+if (!accessToken || !refreshToken) {
+  return Astro.redirect('/login');
+}
+---
+
+<Layout title="FactureArtisan | Éditeur de facture">
+  <div class="container" style="padding: 40px 24px;">
+    <div class="app-header-simple" style="margin-bottom: 40px;">
+      <h1 class="text-gradient">Nouvelle Facture</h1>
+      <p style="color: var(--text-muted);">Remplissez les champs ci-dessous pour générer votre document PDF.</p>
+    </div>
+    
+    <!-- Render React app exclusively on client-side to prevent SSR issues with @react-pdf/renderer -->
+    <InvoiceApp client:only="react" />
+  </div>
+</Layout>
+
+<style is:global>
+  .invoice-app {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+  }
+  
+  .invoice-editor {
+    padding: 40px;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+  }
+  
+  .form-section h3, .items-section h3 {
+    margin-bottom: 20px;
+    color: var(--primary);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+  }
+  
+  .form-section label {
+    margin-top: 15px;
+  }
+  
+  @media (max-width: 900px) {
+    .invoice-app {
+      grid-template-columns: 1fr;
+    }
+    
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .item-row {
+      flex-wrap: wrap;
+    }
+  }
+</style>

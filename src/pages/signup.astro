@@ -1,0 +1,102 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="FactureArtisan | Inscription">
+  <div class="auth-container">
+    <div class="glass-card auth-card">
+      <h1 class="text-gradient">Créer un compte</h1>
+      <p style="color: var(--text-muted); margin-bottom: 30px;">Rejoignez-nous pour créer et sauvegarder vos factures professionnelles.</p>
+      
+      <form id="signup-form">
+        <label for="email">Adresse Email</label>
+        <input type="email" id="email" name="email" required placeholder="artisan@exemple.com" />
+        
+        <label for="password" style="margin-top: 15px;">Mot de passe</label>
+        <input type="password" id="password" name="password" required placeholder="Min. 6 caractères" />
+        
+        <div id="error-msg" class="error-msg"></div>
+        <div id="success-msg" class="success-msg"></div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 25px; padding: 14px;">S'inscrire gratuitement</button>
+      </form>
+      
+      <p style="margin-top: 20px; text-align: center; font-size: 0.9rem;">
+        Déjà un compte ? <a href="/login">Se connecter</a>
+      </p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  
+  const form = document.getElementById('signup-form') as HTMLFormElement;
+  const errorMsg = document.getElementById('error-msg') as HTMLDivElement;
+  const successMsg = document.getElementById('success-msg') as HTMLDivElement;
+  
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorMsg.style.display = 'none';
+    successMsg.style.display = 'none';
+    
+    const formData = new FormData(form);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+    
+    if (error) {
+      errorMsg.textContent = error.message;
+      errorMsg.style.display = 'block';
+    } else {
+      successMsg.textContent = "Inscription réussie ! Vous pouvez maintenant vous connecter.";
+      successMsg.style.display = 'block';
+      form.reset();
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    }
+  });
+</script>
+
+<style>
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 200px);
+    padding: 40px 20px;
+  }
+  
+  .auth-card {
+    width: 100%;
+    max-width: 450px;
+    padding: 40px;
+  }
+  
+  .error-msg {
+    display: none;
+    color: var(--danger);
+    background: rgba(255, 71, 87, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-size: 0.9rem;
+  }
+  
+  .success-msg {
+    display: none;
+    color: var(--success);
+    background: rgba(46, 213, 115, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 15px;
+    font-size: 0.9rem;
+  }
+</style>

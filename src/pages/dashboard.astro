@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const accessToken = Astro.cookies.get('sb-access-token');
+const refreshToken = Astro.cookies.get('sb-refresh-token');
+
+if (!accessToken || !refreshToken) {
+  return Astro.redirect('/login');
+}
+---
+
+<Layout title="FactureArtisan | Dashboard">
+  <div class="container" style="padding: 60px 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+      <div>
+        <h1 class="text-gradient">Tableau de bord</h1>
+        <p style="color: var(--text-muted);">Bienvenue ! Voici un récapitulatif de votre activité.</p>
+      </div>
+      <div>
+        <a href="/app" class="btn btn-primary">+ Nouvelle Facture</a>
+      </div>
+    </div>
+    
+    <div class="glass-card" style="padding: 40px; text-align: center;">
+      <h3 style="margin-bottom: 15px;">Vos factures récentes</h3>
+      <p style="color: var(--text-muted); margin-bottom: 30px;">
+        Vous utilisez actuellement le compte gratuit. L'historique des factures n'est pas sauvegardé dans le cloud.
+      </p>
+      <a href="/pro" class="btn btn-secondary">Débloquer la version Pro (Bientôt)</a>
+    </div>
+  </div>
+</Layout>
