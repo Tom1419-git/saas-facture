@@ -28,9 +28,25 @@ const styles = StyleSheet.create({
 });
 
 // --- PDF DOCUMENT COMPONENT ---
-const InvoiceDocument = ({ data }: { data: any }) => (
+const InvoiceDocument = ({ data, isPro }: { data: any, isPro: boolean }) => (
   <Document>
     <Page size="A4" style={styles.page}>
+      {/* Watermark for non-pro users */}
+      {!isPro && (
+        <Text style={{
+          position: 'absolute',
+          top: '45%',
+          left: '10%',
+          opacity: 0.08,
+          fontSize: 40,
+          transform: 'rotate(-45deg)',
+          color: '#000',
+          zIndex: -1
+        }}>
+          Généré avec FactureArtisan.ch
+        </Text>
+      )}
+      
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>FACTURE</Text>
@@ -112,9 +128,28 @@ export default function InvoiceApp() {
 
   const [isClient, setIsClient] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isPro, setIsPro] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    // Vérifier si l'utilisateur est Pro au chargement
+    const checkProStatus = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_pro')
+          .eq('id', userData.user.id)
+          .single();
+        if (profile?.is_pro) {
+          setIsPro(true);
+        }
+      }
+    };
+    checkProStatus();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -163,7 +198,7 @@ export default function InvoiceApp() {
       }
 
       // 2. Générer le PDF
-      const blob = await pdf(<InvoiceDocument data={{ ...data, subtotal }} />).toBlob();
+      const blob = await pdf(<InvoiceDocument data={{ ...data, subtotal }} isPro={isPro} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;

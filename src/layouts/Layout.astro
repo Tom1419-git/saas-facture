@@ -7,6 +7,16 @@ interface Props {
 }
 
 const { title, description = "Générateur de factures professionnel pour artisans et indépendants." } = Astro.props;
+
+// Read JWT to get email without making a network request
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+let userEmail = null;
+if (accessToken) {
+  try {
+    const payload = JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64').toString());
+    userEmail = payload.email;
+  } catch (e) {}
+}
 ---
 
 <!doctype html>
@@ -30,8 +40,17 @@ const { title, description = "Générateur de factures professionnel pour artisa
           <span class="text-gradient-primary">Facture</span>Artisan
         </a>
         <nav>
-          <a href="/login" class="btn btn-secondary" style="padding: 8px 16px; margin-right: 12px;">Se connecter</a>
-          <a href="/signup" class="btn btn-primary" style="padding: 8px 16px;">Créer un compte</a>
+          {userEmail ? (
+            <div style="display: flex; align-items: center; gap: 15px;">
+              <span style="color: var(--text-muted); font-size: 0.9rem;">{userEmail}</span>
+              <a href="/dashboard" class="btn btn-secondary" style="padding: 6px 14px;">Dashboard</a>
+            </div>
+          ) : (
+            <>
+              <a href="/login" class="btn btn-secondary" style="padding: 8px 16px; margin-right: 12px;">Se connecter</a>
+              <a href="/signup" class="btn btn-primary" style="padding: 8px 16px;">Créer un compte</a>
+            </>
+          )}
         </nav>
       </div>
     </header>
