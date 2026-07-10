@@ -407,7 +407,7 @@ export default function InvoiceApp() {
             <input type="text" name="senderIban" value={data.senderIban} onChange={handleChange} placeholder="CH93 0000 0000 0000 0000 0" />
 
             <div style={{ marginTop: 20, padding: 15, background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginBottom: data.enableQr ? 15 : 0 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginBottom: data.enableQr ? 15 : 0, textTransform: 'none', letterSpacing: 'normal', fontSize: '0.95rem' }}>
                 <input 
                   type="checkbox" 
                   checked={data.enableQr} 
@@ -415,9 +415,10 @@ export default function InvoiceApp() {
                     if (!isPro) { alert("Le QR-Bill Suisse est une fonctionnalité de la version Pro."); return; }
                     setData({...data, enableQr: e.target.checked});
                   }} 
+                  style={{ width: 'auto', margin: 0 }}
                 />
-                <strong>Ajouter un QR-Bill Suisse</strong>
-                {!isPro && <span style={{ fontSize: '0.7rem', color: 'var(--primary)', background: 'rgba(94,106,210,0.1)', padding: '2px 6px', borderRadius: 4 }}>PRO</span>}
+                <strong style={{ display: 'inline-block', lineHeight: 1 }}>Ajouter un QR-Bill Suisse</strong>
+                {!isPro && <span style={{ fontSize: '0.7rem', color: 'var(--primary)', background: 'rgba(94,106,210,0.1)', padding: '2px 6px', borderRadius: 4, lineHeight: 1 }}>PRO</span>}
               </label>
               
               {data.enableQr && (
