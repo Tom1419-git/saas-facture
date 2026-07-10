@@ -306,7 +306,7 @@ export default function InvoiceApp() {
         <h2>Éditeur de Facture</h2>
         
         <div className="form-grid">
-          <div class="form-section">
+          <div className="form-section">
             <h3>Vos Informations</h3>
             
             <label style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -331,7 +331,10 @@ export default function InvoiceApp() {
             <input type="text" name="senderName" value={data.senderName} onChange={handleChange} placeholder="Mon Entreprise Sàrl" />
             
             <label>Adresse complète</label>
-            <textarea name="senderAddress" value={data.senderAddress} onChange={handleChange} placeholder="Rue de la Gare 1&#10;1000 Lausanne" rows={2} />
+            <textarea name="senderAddress" value={data.senderAddress} onChange={handleChange} placeholder={"Rue de la Gare 1\n1000 Lausanne"} rows={2} />
+            
+            <label>Email de contact</label>
+            <input type="email" name="senderEmail" value={data.senderEmail} onChange={handleChange} placeholder="contact@monentreprise.ch" />
             
             <label>IBAN</label>
             <input type="text" name="senderIban" value={data.senderIban} onChange={handleChange} placeholder="CH93 0000 0000 0000 0000 0" />
@@ -384,6 +387,18 @@ export default function InvoiceApp() {
             <strong>{total.toFixed(2)} CHF</strong>
           </div>
         </div>
+
+        <div className="items-section" style={{ marginTop: 30 }}>
+          <label>Notes / Conditions de paiement</label>
+          <textarea
+            name="notes"
+            value={data.notes}
+            onChange={handleChange}
+            placeholder="Ex : Paiement sous 30 jours. IBAN: CH93 ..."
+            rows={3}
+            style={{ width: '100%', marginTop: 6 }}
+          />
+        </div>
       </div>
       
       <div className="invoice-sidebar">
@@ -425,7 +440,7 @@ export default function InvoiceApp() {
           </button>
           
           <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: 15 }}>
-            Votre facture est générée localement. Aucune donnée n'est envoyée sur nos serveurs en version gratuite.
+            Facture générée localement dans votre navigateur. Votre historique est sauvegardé dans votre compte.
           </p>
         </div>
       </div>

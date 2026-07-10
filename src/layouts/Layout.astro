@@ -6,7 +6,8 @@ interface Props {
   description?: string;
 }
 
-const { title, description = "Générateur de factures professionnel pour artisans et indépendants." } = Astro.props;
+const { title, description = "Générateur de factures professionnel pour artisans et indépendants. Gratuit, rapide et conforme aux normes suisses." } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, 'https://facture.mayoraz-net.ch');
 
 // Read JWT to get email without making a network request (Cloudflare compatible)
 const accessToken = Astro.cookies.get('sb-access-token')?.value;
@@ -25,10 +26,26 @@ if (accessToken) {
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <title>{title}</title>
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="FactureArtisan" />
+    <meta property="og:locale" content="fr_CH" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +61,7 @@ if (accessToken) {
         <nav>
           {userEmail ? (
             <div style="display: flex; align-items: center; gap: 15px;">
-              <span style="color: var(--text-muted); font-size: 0.9rem; display: none; @media (min-width: 600px) { display: inline; }">{userEmail}</span>
+              <span class="nav-email">{userEmail}</span>
               <a href="/dashboard" class="btn btn-secondary" style="padding: 6px 14px;">Dashboard</a>
               <button id="logout-btn" class="btn" style="padding: 6px 14px; background: rgba(255,50,50,0.1); color: #ff6b6b; border: 1px solid rgba(255,50,50,0.2);">Déconnexion</button>
             </div>
@@ -112,6 +129,18 @@ if (accessToken) {
     color: var(--text-main);
   }
   
+  .nav-email {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    display: none;
+  }
+  
+  @media (min-width: 600px) {
+    .nav-email {
+      display: inline;
+    }
+  }
+  
   .app-footer {
     padding: 40px 0;
     margin-top: 80px;
@@ -121,3 +150,4 @@ if (accessToken) {
     font-size: 0.9rem;
   }
 </style>
+

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /app
+Disallow: /admin
+
+Sitemap: https://facture.mayoraz-net.ch/sitemap-index.xml
