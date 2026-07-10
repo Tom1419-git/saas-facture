@@ -49,8 +49,8 @@ import Layout from '../layouts/Layout.astro';
           <textarea id="message" name="message" required rows="5" placeholder="Décrivez votre demande..."></textarea>
         </div>
 
-        <!-- Cloudflare Turnstile -->
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAAxAF_XGVTjRlLGC" data-theme="auto"></div>
+        <!-- Web3Forms hCaptcha -->
+        <div class="h-captcha" data-captcha="true" style="margin-bottom: 20px;"></div>
 
         <div id="form-status" class="form-status" style="display: none;"></div>
 
@@ -81,8 +81,8 @@ import Layout from '../layouts/Layout.astro';
   </div>
 </Layout>
 
-<!-- Cloudflare Turnstile script -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<!-- Web3Forms hCaptcha script -->
+<script src="https://web3forms.com/client/script.js" async defer></script>
 
 <script>
   // Show success message if redirect with ?merci=1
