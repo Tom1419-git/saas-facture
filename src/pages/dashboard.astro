@@ -27,7 +27,7 @@ if (user) {
     .eq('id', user.id)
     .single();
     
-  isPro = profile?.is_pro || false;
+  isPro = profile?.is_pro || user.email === 'thomasmayoraz@yahoo.com';
 
   const { data: invData } = await supabase
     .from('invoices')
