@@ -2,9 +2,9 @@
 import Layout from '../layouts/Layout.astro';
 
 // Les liens Stripe (à vérifier avec l'utilisateur)
-const linkMonthly = "https://buy.stripe.com/4gM28j7m36mW2Co2rwfYY00";
-const linkYearly = "https://buy.stripe.com/9B67sDeOvaDcfpa4zEfYY01";
-const linkLifetime = "https://buy.stripe.com/8x2cMX35N6mWb8UgimfYY02";
+const linkMonthly = "https://buy.stripe.com/8x2cMX35N6mWb8UgimfYY02"; // 3.99 CHF
+const linkYearly = "https://buy.stripe.com/4gM28j7m36mW2Co2rwfYY00"; // 39.00 CHF
+const linkLifetime = "https://buy.stripe.com/9B67sDeOvaDcfpa4zEfYY01"; // 89.00 CHF
 
 const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
 ---
@@ -20,7 +20,7 @@ const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
       <!-- Mensuel -->
       <div class="glass-card pricing-card">
         <h3>Mensuel</h3>
-        <div class="price">5 CHF<span>/mois</span></div>
+        <div class="price">3.99 CHF<span>/mois</span></div>
         <p class="desc">Pour tester à votre rythme, sans engagement.</p>
         <ul class="features">
           <li>✔️ Factures illimitées</li>
@@ -48,7 +48,7 @@ const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
       <!-- À vie -->
       <div class="glass-card pricing-card">
         <h3>À vie (Lifetime)</h3>
-        <div class="price">99 CHF<span>/unique</span></div>
+        <div class="price">89 CHF<span>/unique</span></div>
         <p class="desc">Payez une seule fois. Profitez-en pour l'éternité.</p>
         <ul class="features">
           <li>✔️ Factures illimitées</li>
