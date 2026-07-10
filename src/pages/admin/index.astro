@@ -66,9 +66,9 @@ try {
   } else {
     stripeBalance = "Clé manquante";
   }
-} catch (e) {
+} catch (e: any) {
   console.error("Stripe Balance Error:", e);
-  stripeBalance = "Erreur API";
+  stripeBalance = `Erreur: ${e.message}`;
 }
 ---
 
