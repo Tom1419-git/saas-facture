@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '../../lib/supabase';
+
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
+
+if (!accessToken || !refreshToken) {
+  return Astro.redirect('/login');
+}
+
+// Set session for server-side Supabase client
+await supabase.auth.setSession({
+  access_token: accessToken,
+  refresh_token: refreshToken,
+});
+
+const { data: { user }, error } = await supabase.auth.getUser();
+
+// Vérification de l'administrateur
+// Remplace par ton vrai email d'administration
+const ADMIN_EMAIL = "thomasmayoraz@yahoo.com";
+
+if (error || !user || user.email !== ADMIN_EMAIL) {
+  return Astro.redirect('/dashboard');
+}
+---
+
+<Layout title="FactureArtisan | Admin Panel">
+  <div class="container" style="padding: 60px 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+      <div>
+        <h1 class="text-gradient" style="color: var(--danger);">Panel Administrateur</h1>
+        <p style="color: var(--text-muted);">Bienvenue, Patron. Voici la vue globale du SaaS.</p>
+      </div>
+      <div>
+        <a href="/dashboard" class="btn btn-secondary">Retour au site</a>
+      </div>
+    </div>
+    
+    <div class="features-grid">
+      <div class="glass-card" style="padding: 30px;">
+        <h3 style="color: var(--primary);">Statistiques Globales</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">Les statistiques viendront se brancher ici une fois les tables Supabase créées (Nombre d'utilisateurs inscrits, Factures générées, Revenus Stripe).</p>
+      </div>
+      
+      <div class="glass-card" style="padding: 30px;">
+        <h3 style="color: var(--primary);">Gestion des Utilisateurs</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 10px;">En cours de développement...</p>
+      </div>
+      
+      <div class="glass-card" style="padding: 30px;">
+        <h3 style="color: var(--primary);">Outils Rapides</h3>
+        <button class="btn btn-secondary" style="width: 100%; margin-top: 15px;">Purger le cache</button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+  @media (max-width: 900px) {
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
