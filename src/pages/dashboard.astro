@@ -16,11 +16,33 @@ await supabase.auth.setSession({
 
 const { data: { user } } = await supabase.auth.getUser();
 const isAdmin = user?.email === 'thomasmayoraz@yahoo.com';
+
+let isPro = false;
+let invoices = [];
+
+if (user) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_pro')
+    .eq('id', user.id)
+    .single();
+    
+  isPro = profile?.is_pro || false;
+
+  const { data: invData } = await supabase
+    .from('invoices')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(10);
+    
+  if (invData) invoices = invData;
+}
 ---
 
 <Layout title="FactureArtisan | Dashboard">
   <div class="container" style="padding: 60px 24px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
       <div>
         <h1 class="text-gradient">Tableau de bord</h1>
         <p style="color: var(--text-muted);">Bienvenue ! Voici un récapitulatif de votre activité.</p>
@@ -33,12 +55,54 @@ const isAdmin = user?.email === 'thomasmayoraz@yahoo.com';
       </div>
     </div>
     
-    <div class="glass-card" style="padding: 40px; text-align: center;">
-      <h3 style="margin-bottom: 15px;">Vos factures récentes</h3>
-      <p style="color: var(--text-muted); margin-bottom: 30px;">
-        Vous utilisez actuellement le compte gratuit. L'historique des factures n'est pas sauvegardé dans le cloud.
-      </p>
-      <a href="/pro" class="btn btn-secondary">Débloquer la version Pro</a>
+    <div class="glass-card" style="padding: 30px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Vos factures récentes</h3>
+        {!isPro && !isAdmin && (
+          <span style="font-size: 0.8rem; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px;">
+            Gratuit ({invoices.length}/3)
+          </span>
+        )}
+      </div>
+      
+      {invoices.length > 0 ? (
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 500px;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border);">
+                <th style="padding: 10px 0; color: var(--text-muted); font-weight: normal;">Numéro</th>
+                <th style="padding: 10px 0; color: var(--text-muted); font-weight: normal;">Client</th>
+                <th style="padding: 10px 0; color: var(--text-muted); font-weight: normal;">Date</th>
+                <th style="padding: 10px 0; color: var(--text-muted); font-weight: normal; text-align: right;">Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoices.map((inv: any) => (
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 15px 0;"><strong>{inv.invoice_number}</strong></td>
+                  <td style="padding: 15px 0;">{inv.client_name}</td>
+                  <td style="padding: 15px 0;">{new Date(inv.created_at).toLocaleDateString('fr-CH')}</td>
+                  <td style="padding: 15px 0; text-align: right;">{inv.total_amount.toFixed(2)} CHF</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div style="text-align: center; padding: 30px 0;">
+          <p style="color: var(--text-muted); margin-bottom: 20px;">Vous n'avez pas encore généré de facture.</p>
+          <a href="/app" class="btn btn-primary">Créer ma première facture</a>
+        </div>
+      )}
+      
+      {!isPro && !isAdmin && (
+        <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px dashed var(--border);">
+          <p style="color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem;">
+            Avec le compte gratuit, vous êtes limité à 3 factures générées. L'historique vous permet juste de retrouver vos numéros.
+          </p>
+          <a href="/pro" class="btn btn-secondary" style="font-size: 0.9rem;">Débloquer la version Pro (Illimité)</a>
+        </div>
+      )}
     </div>
 
     <!-- ZONE DE DANGER (RGPD) -->
