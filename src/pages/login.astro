@@ -49,6 +49,9 @@ import Layout from '../layouts/Layout.astro';
     if (error) {
       errorMsg.textContent = "Email ou mot de passe incorrect.";
       errorMsg.style.display = 'block';
+    } else if (!data.session) {
+      errorMsg.textContent = "Veuillez confirmer votre adresse email avant de vous connecter.";
+      errorMsg.style.display = 'block';
     } else {
       // Set a cookie so Astro SSR knows we are authenticated
       document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=${data.session.expires_in}; SameSite=Lax`;
