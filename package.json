@@ -22,9 +22,11 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "astro": "^7.0.7",
+    "pdf-lib": "^1.17.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "stripe": "^22.3.1",
+    "swissqrbill": "^4.4.0",
     "typescript": "^6.0.3",
     "wrangler": "^4.110.0"
   }

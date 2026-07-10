@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 });
 
 // --- PDF DOCUMENT COMPONENT ---
-const InvoiceDocument = ({ data, isPro }: { data: any, isPro: boolean }) => {
+const InvoiceDocument = ({ data, isPro, qrPngUrl }: { data: any, isPro: boolean, qrPngUrl?: string | null }) => {
   const isLogo = data.template === 'logo' || data.template === 'enveloppe';
   const isEnveloppe = data.template === 'enveloppe';
   
@@ -143,6 +143,15 @@ const InvoiceDocument = ({ data, isPro }: { data: any, isPro: boolean }) => {
         </View>
       )}
     </Page>
+    
+    {/* QR-Bill Page */}
+    {qrPngUrl && (
+      <Page size="A4" style={{ padding: 0 }}>
+        <View style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '105mm' }}>
+          <Image src={qrPngUrl} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        </View>
+      </Page>
+    )}
   </Document>
   );
 };
@@ -162,7 +171,13 @@ export default function InvoiceApp() {
     notes: '',
     items: [{ desc: 'Prestation de service', qty: 1, price: 100 }],
     logoBase64: null as string | null,
-    template: 'standard' // 'standard', 'logo', 'enveloppe'
+    template: 'standard', // 'standard', 'logo', 'enveloppe'
+    enableQr: false,
+    qrIban: '',
+    qrName: '',
+    qrAddress: '',
+    qrZip: '',
+    qrCity: ''
   });
 
   const [isClient, setIsClient] = useState(false);
@@ -268,8 +283,59 @@ export default function InvoiceApp() {
         }
       }
 
+      // 1.5 Generate QR-Bill PNG if enabled
+      let qrPngUrl = null;
+      if (data.enableQr && isPro) {
+        try {
+          const { SwissQRBill } = await import('swissqrbill/svg');
+          const qrData = {
+            amount: total,
+            currency: "CHF" as const,
+            creditor: {
+              account: data.qrIban.replace(/\s/g, ''),
+              name: data.qrName,
+              address: data.qrAddress,
+              zip: data.qrZip,
+              city: data.qrCity,
+              country: "CH"
+            }
+          };
+          const svg = new SwissQRBill(qrData, { language: 'FR' });
+          const svgString = svg.toString();
+          
+          qrPngUrl = await new Promise<string>((resolve, reject) => {
+            const img = new window.Image();
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              // A4 width (210mm) and QR height (105mm)
+              canvas.width = 595 * 3;
+              canvas.height = 297 * 3;
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/png'));
+              } else {
+                reject('Canvas context not available');
+              }
+              URL.revokeObjectURL(url);
+            };
+            img.onerror = reject;
+            img.src = url;
+          });
+        } catch (e: any) {
+          console.error('QR Generation error:', e);
+          (window as any).showToast('Erreur QR: ' + (e.message || 'IBAN Invalide ou champs manquants'), 'error');
+          setIsGenerating(false);
+          return;
+        }
+      }
+
       // 2. Générer le PDF
-      const blob = await pdf(<InvoiceDocument data={{ ...data, subtotal }} isPro={isPro} />).toBlob();
+      const blob = await pdf(<InvoiceDocument data={{ ...data, subtotal }} isPro={isPro} qrPngUrl={qrPngUrl} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -339,6 +405,48 @@ export default function InvoiceApp() {
             
             <label>IBAN</label>
             <input type="text" name="senderIban" value={data.senderIban} onChange={handleChange} placeholder="CH93 0000 0000 0000 0000 0" />
+
+            <div style={{ marginTop: 20, padding: 15, background: 'var(--bg-card)', borderRadius: 8, border: '1px solid var(--border)' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginBottom: data.enableQr ? 15 : 0 }}>
+                <input 
+                  type="checkbox" 
+                  checked={data.enableQr} 
+                  onChange={(e) => {
+                    if (!isPro) { alert("Le QR-Bill Suisse est une fonctionnalité de la version Pro."); return; }
+                    setData({...data, enableQr: e.target.checked});
+                  }} 
+                />
+                <strong>Ajouter un QR-Bill Suisse</strong>
+                {!isPro && <span style={{ fontSize: '0.7rem', color: 'var(--primary)', background: 'rgba(94,106,210,0.1)', padding: '2px 6px', borderRadius: 4 }}>PRO</span>}
+              </label>
+              
+              {data.enableQr && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div>
+                    <label>IBAN (Norme QR)</label>
+                    <input type="text" name="qrIban" value={data.qrIban} onChange={handleChange} placeholder="CH93 ..." />
+                  </div>
+                  <div>
+                    <label>Nom du Créancier</label>
+                    <input type="text" name="qrName" value={data.qrName} onChange={handleChange} placeholder="Nom officiel" />
+                  </div>
+                  <div>
+                    <label>Rue et numéro</label>
+                    <input type="text" name="qrAddress" value={data.qrAddress} onChange={handleChange} placeholder="Rue de la Gare 1" />
+                  </div>
+                  <div style={{ display: 'flex', gap: 10 }}>
+                    <div style={{ flex: 1 }}>
+                      <label>NPA</label>
+                      <input type="text" name="qrZip" value={data.qrZip} onChange={handleChange} placeholder="1000" />
+                    </div>
+                    <div style={{ flex: 2 }}>
+                      <label>Localité</label>
+                      <input type="text" name="qrCity" value={data.qrCity} onChange={handleChange} placeholder="Lausanne" />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="form-section">
