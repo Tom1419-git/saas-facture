@@ -178,6 +178,11 @@ export default function InvoiceApp() {
     const checkProStatus = async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (userData?.user) {
+        if (userData.user.email === 'thomasmayoraz@yahoo.com') {
+          setIsPro(true);
+          return;
+        }
+
         const { data: profile } = await supabase
           .from('profiles')
           .select('is_pro')
@@ -254,7 +259,9 @@ export default function InvoiceApp() {
           .eq('id', userData.user.id)
           .single();
           
-        if (profile && !profile.is_pro && profile.invoice_count >= 3) {
+        const isUserAdmin = userData.user.email === 'thomasmayoraz@yahoo.com';
+          
+        if (profile && !profile.is_pro && !isUserAdmin && profile.invoice_count >= 3) {
           alert('Vous avez atteint la limite de 3 factures gratuites. Passez à la version Pro pour générer des factures illimitées !');
           setIsGenerating(false);
           return;
