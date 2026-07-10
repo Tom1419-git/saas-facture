@@ -1,0 +1,62 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="FactureArtisan | Page introuvable">
+  <div class="not-found-container">
+    <div class="not-found-content">
+      <div class="error-code">404</div>
+      <h1 class="text-gradient">Page introuvable</h1>
+      <p>Cette page n'existe pas ou a été déplacée.</p>
+      <div class="not-found-actions">
+        <a href="/" class="btn btn-primary">← Retour à l'accueil</a>
+        <a href="/app" class="btn btn-secondary">Créer une facture</a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .not-found-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 250px);
+    padding: 40px 24px;
+    text-align: center;
+  }
+
+  .not-found-content {
+    max-width: 480px;
+  }
+
+  .error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    letter-spacing: -4px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    font-size: 1.05rem;
+  }
+
+  .not-found-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+</style>

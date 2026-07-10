@@ -1,0 +1,232 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="FactureArtisan | Contact"
+  description="Contactez-nous pour toute question sur FactureArtisan. Notre équipe répond rapidement à vos demandes concernant la facturation, la version Pro ou les problèmes techniques."
+>
+  <div class="contact-container">
+    <div class="glass-card contact-card">
+      <div class="contact-header">
+        <h1 class="text-gradient">Nous contacter</h1>
+        <p>Une question, un problème ou une suggestion ? On vous répond sous 24h.</p>
+        <a href="mailto:contact@mayoraz-net.ch" class="email-direct">
+          <span>✉️</span> contact@mayoraz-net.ch
+        </a>
+      </div>
+
+      <form id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+        <!-- Web3Forms key -->
+        <input type="hidden" name="access_key" value="77250cd8-c7c1-4aea-8fd1-52dbb5990c89">
+        <input type="hidden" name="subject" value="[FactureArtisan] Nouveau message de contact">
+        <input type="hidden" name="from_name" value="FactureArtisan Contact">
+        <input type="hidden" name="redirect" value="https://facture.mayoraz-net.ch/contact?merci=1">
+
+        <div class="form-group">
+          <label for="name">Votre nom</label>
+          <input type="text" id="name" name="name" required placeholder="Jean Dupont" autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Adresse email</label>
+          <input type="email" id="email" name="email" required placeholder="jean@exemple.ch" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="subject-choice">Sujet</label>
+          <select id="subject-choice" name="topic">
+            <option value="question">Question générale</option>
+            <option value="bug">Problème technique / Bug</option>
+            <option value="pro">Version Pro</option>
+            <option value="facturation">Facturation / Paiement</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required rows="5" placeholder="Décrivez votre demande..."></textarea>
+        </div>
+
+        <!-- Cloudflare Turnstile -->
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAAxAF_XGVTjRlLGC" data-theme="auto"></div>
+
+        <div id="form-status" class="form-status" style="display: none;"></div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary submit-btn">
+          <span id="btn-text">Envoyer le message</span>
+          <span id="btn-loader" style="display:none;">Envoi en cours...</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="contact-info">
+      <div class="info-card glass-card">
+        <div class="info-icon">⚡</div>
+        <h3>Réponse rapide</h3>
+        <p>Nous répondons généralement sous 24h les jours ouvrés.</p>
+      </div>
+      <div class="info-card glass-card">
+        <div class="info-icon">🔒</div>
+        <h3>Confidentiel</h3>
+        <p>Vos données ne sont pas partagées. Conformité RGPD garantie.</p>
+      </div>
+      <div class="info-card glass-card">
+        <div class="info-icon">🇨🇭</div>
+        <h3>Basé en Suisse</h3>
+        <p>FactureArtisan est développé et maintenu depuis Lausanne.</p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<!-- Cloudflare Turnstile script -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<script>
+  // Show success message if redirect with ?merci=1
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('merci') === '1') {
+    const status = document.getElementById('form-status');
+    const form = document.getElementById('contact-form');
+    if (status && form) {
+      form.style.display = 'none';
+      status.style.display = 'block';
+      status.className = 'form-status success-msg';
+      status.innerHTML = '✅ <strong>Message envoyé !</strong> Merci, nous vous répondrons dans les plus brefs délais.';
+    }
+  }
+</script>
+
+<style>
+  .contact-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 30px;
+    align-items: start;
+  }
+
+  .contact-card {
+    padding: 40px;
+  }
+
+  .contact-header {
+    margin-bottom: 36px;
+  }
+
+  .contact-header h1 {
+    margin-bottom: 10px;
+  }
+
+  .contact-header p {
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .email-direct {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+  }
+
+  .email-direct:hover {
+    border-color: var(--primary);
+    background: rgba(94,106,210,0.07);
+    color: var(--primary-hover);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .cf-turnstile {
+    margin: 20px 0;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    margin-top: 4px;
+  }
+
+  .form-status {
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .form-status.success-msg {
+    background: rgba(46, 213, 115, 0.12);
+    border: 1px solid rgba(46, 213, 115, 0.35);
+    color: var(--success);
+  }
+
+  .form-status.error-msg {
+    background: rgba(255, 71, 87, 0.12);
+    border: 1px solid rgba(255, 71, 87, 0.35);
+    color: var(--danger);
+  }
+
+  /* Side info cards */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .info-card {
+    padding: 22px;
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+
+  .info-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .info-card p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .contact-container {
+      grid-template-columns: 1fr;
+      padding: 40px 16px;
+    }
+
+    .contact-card {
+      padding: 28px 20px;
+    }
+
+    .contact-info {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .info-card {
+      flex: 1;
+      min-width: 140px;
+    }
+  }
+</style>

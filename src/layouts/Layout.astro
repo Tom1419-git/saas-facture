@@ -51,6 +51,16 @@ if (accessToken) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Apply theme BEFORE paint to avoid flash -->
+    <script is:inline>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
   </head>
   <body>
     <header class="app-header">
@@ -59,15 +69,20 @@ if (accessToken) {
           <span class="text-gradient-primary">Facture</span>Artisan
         </a>
         <nav>
+          <!-- Theme Toggle -->
+          <button id="theme-toggle" class="btn theme-btn" aria-label="Basculer le thème" title="Mode clair / sombre">
+            <span class="theme-icon">🌙</span>
+          </button>
+
           {userEmail ? (
-            <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
               <span class="nav-email">{userEmail}</span>
               <a href="/dashboard" class="btn btn-secondary" style="padding: 6px 14px;">Dashboard</a>
               <button id="logout-btn" class="btn" style="padding: 6px 14px; background: rgba(255,50,50,0.1); color: #ff6b6b; border: 1px solid rgba(255,50,50,0.2);">Déconnexion</button>
             </div>
           ) : (
             <>
-              <a href="/login" class="btn btn-secondary" style="padding: 8px 16px; margin-right: 12px;">Se connecter</a>
+              <a href="/login" class="btn btn-secondary" style="padding: 8px 16px; margin-right: 8px;">Se connecter</a>
               <a href="/signup" class="btn btn-primary" style="padding: 8px 16px;">Créer un compte</a>
             </>
           )}
@@ -79,75 +94,161 @@ if (accessToken) {
       <slot />
     </main>
 
+    <!-- Global Toast -->
+    <div id="global-toast" class="toast" role="alert" aria-live="polite"></div>
+
     <footer class="app-footer">
-      <div class="container footer-content">
-        <p>&copy; {new Date().getFullYear()} FactureArtisan. Créé avec passion par <a href="https://mayoraz-net.ch" target="_blank" rel="noopener noreferrer">Thomas Mayoraz</a>.</p>
+      <div class="container">
+        <div class="footer-links">
+          <a href="/contact">Contact</a>
+          <span class="footer-sep">·</span>
+          <a href="mailto:contact@mayoraz-net.ch">contact@mayoraz-net.ch</a>
+          <span class="footer-sep">·</span>
+          <a href="/pro">Version Pro</a>
+        </div>
+        <p class="footer-copy">&copy; {new Date().getFullYear()} FactureArtisan — Créé par <a href="https://mayoraz-net.ch" target="_blank" rel="noopener noreferrer">Thomas Mayoraz</a>.</p>
       </div>
     </footer>
     
     <script>
       import { supabase } from '../lib/supabase';
       
+      // ── Logout ───────────────────────────────
       const logoutBtn = document.getElementById('logout-btn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
-          // 1. Clear Supabase auth session
           await supabase.auth.signOut();
-          
-          // 2. Clear cookies
           document.cookie = 'sb-access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
           document.cookie = 'sb-refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-          
-          // 3. Redirect to home
           window.location.href = '/';
         });
       }
+
+      // ── Theme Toggle ─────────────────────────
+      const themeBtn = document.getElementById('theme-toggle') as HTMLButtonElement;
+      const themeIcon = themeBtn?.querySelector('.theme-icon') as HTMLSpanElement;
+
+      function applyTheme(theme: string) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        if (themeIcon) themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+      }
+
+      // Set initial icon
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      if (themeIcon) themeIcon.textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+
+      themeBtn?.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+
+      // ── Global Toast Helper ───────────────────
+      window.showToast = function(message: string, type: 'success' | 'error' = 'success') {
+        const toast = document.getElementById('global-toast');
+        if (!toast) return;
+        toast.textContent = (type === 'success' ? '✅ ' : '❌ ') + message;
+        toast.className = `toast toast-${type} show`;
+        setTimeout(() => { toast.className = 'toast'; }, 3500);
+      };
     </script>
   </body>
 </html>
 
 <style>
   .app-header {
-    padding: 20px 0;
+    padding: 16px 0;
     border-bottom: 1px solid var(--border);
-    background: rgba(10, 10, 12, 0.8);
-    backdrop-filter: blur(10px);
+    background: var(--header-bg, rgba(10, 10, 12, 0.85));
+    backdrop-filter: blur(12px);
     position: sticky;
     top: 0;
     z-index: 100;
+    transition: background 0.3s ease;
   }
   
   .header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
   }
   
   .logo {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-main);
+    flex-shrink: 0;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .theme-btn {
+    padding: 8px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    font-size: 1rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .theme-btn:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  [data-theme="light"] .theme-btn:hover {
+    background: rgba(0,0,0,0.06);
   }
   
   .nav-email {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     display: none;
   }
   
-  @media (min-width: 600px) {
+  @media (min-width: 640px) {
     .nav-email {
       display: inline;
     }
   }
   
   .app-footer {
-    padding: 40px 0;
+    padding: 36px 0;
     margin-top: 80px;
     border-top: 1px solid var(--border);
     text-align: center;
     color: var(--text-muted);
     font-size: 0.9rem;
   }
-</style>
 
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .footer-sep {
+    color: var(--border);
+  }
+
+  .footer-links a {
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover {
+    color: var(--primary);
+  }
+
+  .footer-copy {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+  }
+</style>

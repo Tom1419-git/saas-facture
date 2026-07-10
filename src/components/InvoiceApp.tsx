@@ -262,7 +262,7 @@ export default function InvoiceApp() {
         const isUserAdmin = userData.user.email === 'thomasmayoraz@yahoo.com';
           
         if (profile && !profile.is_pro && !isUserAdmin && profile.invoice_count >= 3) {
-          alert('Vous avez atteint la limite de 3 factures gratuites. Passez à la version Pro pour générer des factures illimitées !');
+          (window as any).showToast('Limite de 3 factures gratuites atteinte. Passez à la version Pro !', 'error');
           setIsGenerating(false);
           return;
         }
@@ -276,6 +276,7 @@ export default function InvoiceApp() {
       link.download = `Facture_${data.invoiceNumber || 'Nouvelle'}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
+      (window as any).showToast('Facture téléchargée avec succès !', 'success');
       
       // 3. Sauvegarder dans la DB (si connecté)
       if (userData.user) {
@@ -293,7 +294,7 @@ export default function InvoiceApp() {
       
     } catch (err) {
       console.error(err);
-      alert('Erreur lors de la génération du PDF');
+      (window as any).showToast('Erreur lors de la génération du PDF', 'error');
     }
     setIsGenerating(false);
   };
