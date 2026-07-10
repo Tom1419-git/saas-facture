@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="FactureArtisan | Politique de Confidentialité">
+  <div class="container" style="padding: 60px 24px; max-width: 800px; line-height: 1.6;">
+    <h1 class="text-gradient" style="margin-bottom: 30px;">Politique de Confidentialité</h1>
+    
+    <div class="glass-card" style="padding: 30px; margin-bottom: 40px; text-align: left;">
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Dernière mise à jour : 10 juillet 2026</p>
+
+      <p>
+        La protection de vos données personnelles est une priorité pour FactureArtisan. 
+        Cette politique détaille la façon dont nous collectons, utilisons et protégeons vos informations.
+      </p>
+
+      <h2 style="color: var(--primary); margin-top: 30px; margin-bottom: 15px;">1. Données collectées</h2>
+      <p>
+        Dans le cadre de l'utilisation de nos services, nous sommes amenés à collecter :
+      </p>
+      <ul style="margin-left: 20px; margin-bottom: 15px;">
+        <li><strong>Informations de compte :</strong> Votre adresse email (nécessaire pour la connexion).</li>
+        <li><strong>Données de facturation :</strong> Les informations que vous saisissez dans le générateur (nom du client, montants, descriptions) sont stockées pour vous permettre de retrouver vos factures ultérieurement.</li>
+        <li><strong>Fichiers :</strong> Votre logo personnalisé, si vous l'ajoutez (Version Pro).</li>
+      </ul>
+
+      <h2 style="color: var(--primary); margin-top: 30px; margin-bottom: 15px;">2. Utilisation des données</h2>
+      <p>
+        Vos données sont utilisées <strong>exclusivement</strong> pour le fonctionnement du Service FactureArtisan (sauvegarde de vos brouillons, génération des PDF, gestion de votre abonnement). 
+        <strong>FactureArtisan ne revend, ne loue, ni ne partage vos données personnelles à des fins publicitaires.</strong>
+      </p>
+
+      <h2 style="color: var(--primary); margin-top: 30px; margin-bottom: 15px;">3. Sous-traitants et tiers</h2>
+      <p>
+        Afin de fournir notre service, nous nous appuyons sur des infrastructures tierces sécurisées :
+      </p>
+      <ul style="margin-left: 20px; margin-bottom: 15px;">
+        <li><strong>Supabase (AWS, région de Zurich/Europe) :</strong> Hébergement de la base de données et gestion de l'authentification.</li>
+        <li><strong>Stripe :</strong> Traitement des paiements sécurisés. FactureArtisan n'a jamais accès à vos numéros de carte bancaire, qui sont gérés et sécurisés directement par Stripe.</li>
+        <li><strong>Cloudflare :</strong> CDN et sécurité du réseau (protection anti-DDoS, captchas).</li>
+      </ul>
+
+      <h2 style="color: var(--primary); margin-top: 30px; margin-bottom: 15px;">4. Sécurité</h2>
+      <p>
+        Les échanges avec le site sont chiffrés (HTTPS/TLS). Les bases de données sont protégées par des règles d'accès strictes (Row Level Security) garantissant que vous seul avez accès à vos propres factures.
+      </p>
+
+      <h2 style="color: var(--primary); margin-top: 30px; margin-bottom: 15px;">5. Vos droits (RGPD / nLPD)</h2>
+      <p>
+        Conformément à la nouvelle Loi sur la Protection des Données (nLPD) en Suisse et au RGPD européen, vous disposez d'un droit d'accès, de rectification et de suppression totale de vos données. 
+      </p>
+      <p>
+        Pour exercer ces droits (par exemple, pour supprimer définitivement votre compte et l'historique de vos factures), veuillez nous envoyer une demande à l'adresse suivante : 
+        <a href="mailto:contact@mayoraz-net.ch">contact@mayoraz-net.ch</a>.
+      </p>
+    </div>
+  </div>
+</Layout>
