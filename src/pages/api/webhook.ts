@@ -2,11 +2,15 @@ import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context) => {
   try {
-    const stripeKey = import.meta.env.STRIPE_SECRET_KEY;
-    const webhookSecret = import.meta.env.STRIPE_WEBHOOK_SECRET;
-    const serviceRoleKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
+    // Dans Cloudflare, les variables d'environnement secrètes sont dans context.locals.runtime.env
+    // En dev local, on utilise import.meta.env comme fallback
+    const env = (context.locals as any).runtime?.env || import.meta.env;
+    
+    const stripeKey = env.STRIPE_SECRET_KEY;
+    const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
+    const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
 
     if (!stripeKey || !webhookSecret || !serviceRoleKey) {
       console.error("Missing environment variables for Stripe Webhook");
@@ -18,12 +22,12 @@ export const POST: APIRoute = async ({ request }) => {
       httpClient: Stripe.createFetchHttpClient(), // Requis pour Cloudflare Workers
     });
 
-    const signature = request.headers.get('stripe-signature');
+    const signature = context.request.headers.get('stripe-signature');
     if (!signature) {
       return new Response("Missing Stripe Signature", { status: 400 });
     }
 
-    const body = await request.text();
+    const body = await context.request.text();
 
     let event;
     try {

@@ -49,7 +49,8 @@ const { data: recentUsers } = await supabase.rpc('get_admin_users');
 // 5. Revenus Stripe (Balance)
 let stripeBalance = "0.00 CHF";
 try {
-  const stripeKey = import.meta.env.STRIPE_SECRET_KEY;
+  const env = (Astro.locals as any).runtime?.env || import.meta.env;
+  const stripeKey = env.STRIPE_SECRET_KEY;
   if (stripeKey) {
     const stripe = new Stripe(stripeKey, {
       apiVersion: '2024-04-10',
