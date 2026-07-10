@@ -25,37 +25,9 @@
 - **Hébergement :** [Cloudflare Pages / Workers](https://pages.cloudflare.com/) (Edge runtime)
 - **Styling :** CSS Vanilla + Variables CSS (Thème Clair/Sombre)
 
-## 💻 Installation en local
-
-Si vous souhaitez faire tourner le projet localement pour le développement :
-
-1. **Cloner le dépôt :**
-   ```bash
-   git clone https://github.com/Tom1419-git/saas-facture.git
-   cd saas-facture
-   ```
-
-2. **Installer les dépendances :**
-   ```bash
-   npm install
-   ```
-
-3. **Variables d'environnement :**
-   Créer un fichier `.env` à la racine (ne pas commiter) avec les clés publiques :
-   ```env
-   PUBLIC_SUPABASE_URL=votre_url_supabase
-   PUBLIC_SUPABASE_ANON_KEY=votre_cle_anon
-   ```
-
-4. **Lancer le serveur de développement :**
-   ```bash
-   npm run dev
-   ```
-   L'application sera accessible sur `http://localhost:4321`.
-
 ## 📜 Licence & Mentions Légales
 
-Ce code source est la propriété intellectuelle de **Thomas Mayoraz**. Toute copie, revente ou hébergement tiers sans autorisation préalable est strictement interdite. 
+Ce code source est la propriété intellectuelle de **Thomas Mayoraz**. Toute copie, reproduction, revente ou hébergement tiers sans autorisation explicite préalable est strictement interdite. 
 
 Pour les conditions d'utilisation du service hébergé, veuillez consulter les [Mentions Légales](https://facture.mayoraz-net.ch/mentions-legales) et les [CGV](https://facture.mayoraz-net.ch/cgv).
 
