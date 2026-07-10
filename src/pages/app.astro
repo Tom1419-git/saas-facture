@@ -75,6 +75,8 @@ if (!accessToken || !refreshToken) {
     <!-- Render React app exclusively on client-side to prevent SSR issues with @react-pdf/renderer -->
     <InvoiceApp client:only="react" />
   </div>
+</Layout>
+
 <style>
   .templates-grid {
     display: grid;
