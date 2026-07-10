@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
 
 const accessToken = Astro.cookies.get('sb-access-token');
 const refreshToken = Astro.cookies.get('sb-refresh-token');
@@ -7,6 +8,14 @@ const refreshToken = Astro.cookies.get('sb-refresh-token');
 if (!accessToken || !refreshToken) {
   return Astro.redirect('/login');
 }
+
+await supabase.auth.setSession({
+  access_token: accessToken.value,
+  refresh_token: refreshToken.value,
+});
+
+const { data: { user } } = await supabase.auth.getUser();
+const isAdmin = user?.email === 'thomasmayoraz@yahoo.com';
 ---
 
 <Layout title="FactureArtisan | Dashboard">
@@ -16,7 +25,10 @@ if (!accessToken || !refreshToken) {
         <h1 class="text-gradient">Tableau de bord</h1>
         <p style="color: var(--text-muted);">Bienvenue ! Voici un récapitulatif de votre activité.</p>
       </div>
-      <div>
+      <div style="display: flex; gap: 15px;">
+        {isAdmin && (
+          <a href="/admin" class="btn btn-secondary" style="border-color: var(--danger); color: var(--danger);">⚙️ Admin</a>
+        )}
         <a href="/app" class="btn btn-primary">+ Nouvelle Facture</a>
       </div>
     </div>
