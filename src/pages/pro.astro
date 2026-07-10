@@ -1,12 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// Les liens Stripe (à vérifier avec l'utilisateur)
-const linkMonthly = "https://buy.stripe.com/8x2cMX35N6mWb8UgimfYY02"; // 3.99 CHF
-const linkYearly = "https://buy.stripe.com/4gM28j7m36mW2Co2rwfYY00"; // 39.00 CHF
-const linkLifetime = "https://buy.stripe.com/9B67sDeOvaDcfpa4zEfYY01"; // 89.00 CHF
+let linkMonthly = "https://buy.stripe.com/8x2cMX35N6mWb8UgimfYY02"; // 3.99 CHF
+let linkYearly = "https://buy.stripe.com/4gM28j7m36mW2Co2rwfYY00"; // 39.00 CHF
+let linkLifetime = "https://buy.stripe.com/9B67sDeOvaDcfpa4zEfYY01"; // 89.00 CHF
 
-const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
+let userId = null;
+const accessToken = Astro.cookies.get('sb-access-token')?.value;
+
+if (accessToken) {
+  try {
+    const payload = JSON.parse(atob(accessToken.split('.')[1]));
+    userId = payload.sub; // 'sub' contient l'ID unique de l'utilisateur
+    
+    if (userId) {
+      const param = `?client_reference_id=${userId}`;
+      linkMonthly += param;
+      linkYearly += param;
+      linkLifetime += param;
+    }
+  } catch (e) {
+    console.error("Erreur JWT", e);
+  }
+}
 ---
 
 <Layout title="FactureArtisan | Version Pro">
@@ -27,7 +43,10 @@ const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
           <li>✔️ Sauvegarde Cloud</li>
           <li>✔️ Logo personnalisable</li>
         </ul>
-        <a href={linkMonthly} class="btn btn-secondary" style="width: 100%;">Choisir Mensuel</a>
+        {userId ? 
+          <a href={linkMonthly} class="btn btn-secondary" style="width: 100%;">Choisir Mensuel</a> :
+          <a href="/login" class="btn btn-secondary" style="width: 100%;">Se connecter pour choisir</a>
+        }
       </div>
 
       <!-- Annuel (Recommandé) -->
@@ -42,7 +61,10 @@ const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
           <li>✔️ Logo personnalisable</li>
           <li>✔️ Support prioritaire</li>
         </ul>
-        <a href={linkYearly} class="btn btn-primary" style="width: 100%;">Prendre l'Annuel</a>
+        {userId ? 
+          <a href={linkYearly} class="btn btn-primary" style="width: 100%;">Prendre l'Annuel</a> :
+          <a href="/login" class="btn btn-primary" style="width: 100%;">Se connecter pour choisir</a>
+        }
       </div>
 
       <!-- À vie -->
@@ -56,7 +78,10 @@ const userEmail = Astro.cookies.get('sb-access-token') ? "true" : "";
           <li>✔️ Logo personnalisable</li>
           <li>✔️ Mises à jour à vie</li>
         </ul>
-        <a href={linkLifetime} class="btn btn-secondary" style="width: 100%;">Débloquer à vie</a>
+        {userId ? 
+          <a href={linkLifetime} class="btn btn-secondary" style="width: 100%;">Débloquer à vie</a> :
+          <a href="/login" class="btn btn-secondary" style="width: 100%;">Se connecter pour choisir</a>
+        }
       </div>
     </div>
     

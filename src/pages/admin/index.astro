@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase';
+import Stripe from 'stripe';
 
 const accessToken = Astro.cookies.get('sb-access-token')?.value;
 const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
@@ -44,6 +45,30 @@ const totalInvoices = profilesData?.reduce((acc, p) => acc + (p.invoice_count ||
 
 // 4. Recent users (via RPC pour obtenir les emails de auth.users)
 const { data: recentUsers } = await supabase.rpc('get_admin_users');
+
+// 5. Revenus Stripe (Balance)
+let stripeBalance = "0.00 CHF";
+try {
+  const stripeKey = import.meta.env.STRIPE_SECRET_KEY;
+  if (stripeKey) {
+    const stripe = new Stripe(stripeKey, {
+      apiVersion: '2024-04-10',
+      httpClient: Stripe.createFetchHttpClient(),
+    });
+    const balance = await stripe.balance.retrieve();
+    const available = balance.available.find((b: any) => b.currency === 'chf') || { amount: 0 };
+    const pending = balance.pending.find((b: any) => b.currency === 'chf') || { amount: 0 };
+    
+    // Total (disponible + en attente), ramené en francs (divisé par 100 car Stripe compte en centimes)
+    const totalAmount = (available.amount + pending.amount) / 100;
+    stripeBalance = `${totalAmount.toFixed(2)} CHF`;
+  } else {
+    stripeBalance = "Clé manquante";
+  }
+} catch (e) {
+  console.error("Stripe Balance Error:", e);
+  stripeBalance = "Erreur API";
+}
 ---
 
 <Layout title="FactureArtisan | Admin Panel">
@@ -76,7 +101,7 @@ const { data: recentUsers } = await supabase.rpc('get_admin_users');
         </div>
         <div class="stat-row">
           <span class="stat-label">Revenus Stripe :</span>
-          <span class="stat-value" style="color: var(--text-muted); font-size: 0.85rem;">En attente de l'API</span>
+          <span class="stat-value" style="color: var(--success);">{stripeBalance}</span>
         </div>
         
         {profilesData === null && (
