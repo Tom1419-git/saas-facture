@@ -144,7 +144,8 @@ const InvoiceDocument = ({ data, isPro }: { data: any, isPro: boolean }) => {
       )}
     </Page>
   </Document>
-);
+  );
+};
 
 // --- MAIN REACT COMPONENT ---
 export default function InvoiceApp() {
