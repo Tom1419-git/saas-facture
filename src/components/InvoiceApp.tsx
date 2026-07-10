@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { pdf, Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import { pdf, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { supabase } from '../lib/supabase';
 
 // --- PDF STYLES ---
 const styles = StyleSheet.create({
@@ -141,7 +142,27 @@ export default function InvoiceApp() {
 
   const downloadPDF = async () => {
     setIsGenerating(true);
+    
     try {
+      // 1. Vérifier l'utilisateur connecté et ses limites
+      const { data: userData } = await supabase.auth.getUser();
+      
+      if (userData.user) {
+        // Récupérer le profil
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_pro, invoice_count')
+          .eq('id', userData.user.id)
+          .single();
+          
+        if (profile && !profile.is_pro && profile.invoice_count >= 3) {
+          alert('Vous avez atteint la limite de 3 factures gratuites. Passez à la version Pro pour générer des factures illimitées !');
+          setIsGenerating(false);
+          return;
+        }
+      }
+
+      // 2. Générer le PDF
       const blob = await pdf(<InvoiceDocument data={{ ...data, subtotal }} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -149,6 +170,21 @@ export default function InvoiceApp() {
       link.download = `Facture_${data.invoiceNumber || 'Nouvelle'}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
+      
+      // 3. Sauvegarder dans la DB (si connecté)
+      if (userData.user) {
+        // Enregistrer l'historique
+        await supabase.from('invoices').insert({
+          user_id: userData.user.id,
+          invoice_number: data.invoiceNumber || 'Non défini',
+          client_name: data.clientName || 'Client inconnu',
+          total_amount: total
+        });
+        
+        // Incrémenter le compteur
+        await supabase.rpc('increment_invoice_count', { user_id: userData.user.id });
+      }
+      
     } catch (err) {
       console.error(err);
       alert('Erreur lors de la génération du PDF');

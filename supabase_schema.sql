@@ -51,3 +51,13 @@ ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Les utilisateurs voient leurs factures" ON public.invoices FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Les utilisateurs créent leurs factures" ON public.invoices FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Les utilisateurs suppriment leurs factures" ON public.invoices FOR DELETE USING (auth.uid() = user_id);
+
+-- 3. Fonction pour incrémenter le compteur de factures
+CREATE OR REPLACE FUNCTION increment_invoice_count(user_id UUID)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.profiles
+  SET invoice_count = invoice_count + 1
+  WHERE id = user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
