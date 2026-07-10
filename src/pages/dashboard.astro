@@ -45,26 +45,25 @@ const isAdmin = user?.email === 'thomasmayoraz@yahoo.com';
     <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255, 50, 50, 0.2);">
       <h3 style="color: #ff6b6b; margin-bottom: 10px;">Zone de danger</h3>
       <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-        La suppression de votre compte est irréversible. Toutes vos données personnelles et vos factures seront définitivement effacées conformément au RGPD.
+        Conformément au RGPD, vous avez le droit de demander la suppression totale de vos données personnelles.
       </p>
       <button id="trigger-delete-btn" class="btn" style="background: rgba(255, 50, 50, 0.1); color: #ff6b6b; border: 1px solid rgba(255, 50, 50, 0.3); padding: 8px 16px;">
-        Supprimer mon compte
+        Demander la suppression de mon compte
       </button>
     </div>
 
     <!-- MODAL DE CONFIRMATION -->
     <div id="delete-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
       <div class="glass-card" style="padding: 30px; max-width: 400px; width: 90%; border-color: rgba(255,50,50,0.3);">
-        <h3 style="color: #ff6b6b; margin-bottom: 15px;">Êtes-vous sûr(e) ?</h3>
+        <h3 style="color: #ff6b6b; margin-bottom: 15px;">Demande de suppression</h3>
         <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.95rem;">
-          Cette action va effacer votre compte et vos données instantanément. 
-          Veuillez taper <strong>SUPPRIMER</strong> ci-dessous pour confirmer.
+          Votre demande de suppression sera envoyée à notre équipe et traitée sous 30 jours, conformément au RGPD.
+          Toutes vos données et factures seront définitivement effacées.
         </p>
-        <input type="text" id="delete-confirm-input" placeholder="Tapez SUPPRIMER" class="form-control" style="margin-bottom: 20px; text-align: center;" />
         
         <div style="display: flex; gap: 10px;">
           <button id="cancel-delete-btn" class="btn btn-secondary" style="flex: 1;">Annuler</button>
-          <button id="confirm-delete-btn" class="btn" disabled style="flex: 1; background: #ff6b6b; color: white; opacity: 0.5; cursor: not-allowed;">Confirmer</button>
+          <a href="mailto:thomasmayoraz@yahoo.com?subject=Demande%20de%20suppression%20de%20compte%20RGPD&body=Bonjour%2C%0A%0AJe%20souhaite%20exercer%20mon%20droit%20à%20l'oubli%20et%20demande%20la%20suppression%20de%20mon%20compte%20FactureArtisan%20ainsi%20que%20toutes%20les%20données%20associées.%0A%0AMerci." id="confirm-delete-btn" class="btn" style="flex: 1; background: #ff6b6b; color: white; text-decoration: none; text-align: center;">Confirmer</a>
         </div>
       </div>
     </div>
@@ -76,63 +75,22 @@ const isAdmin = user?.email === 'thomasmayoraz@yahoo.com';
     const triggerBtn = document.getElementById('trigger-delete-btn');
     const modal = document.getElementById('delete-modal');
     const cancelBtn = document.getElementById('cancel-delete-btn');
-    const confirmBtn = document.getElementById('confirm-delete-btn') as HTMLButtonElement;
-    const input = document.getElementById('delete-confirm-input') as HTMLInputElement;
+    const confirmBtn = document.getElementById('confirm-delete-btn');
 
-    if (triggerBtn && modal && cancelBtn && confirmBtn && input) {
+    if (triggerBtn && modal && cancelBtn && confirmBtn) {
       triggerBtn.addEventListener('click', () => {
         modal.style.display = 'flex';
-        input.value = '';
-        confirmBtn.disabled = true;
-        confirmBtn.style.opacity = '0.5';
-        confirmBtn.style.cursor = 'not-allowed';
       });
 
       cancelBtn.addEventListener('click', () => {
         modal.style.display = 'none';
       });
 
-      input.addEventListener('input', (e) => {
-        const val = (e.target as HTMLInputElement).value;
-        if (val === 'SUPPRIMER') {
-          confirmBtn.disabled = false;
-          confirmBtn.style.opacity = '1';
-          confirmBtn.style.cursor = 'pointer';
-        } else {
-          confirmBtn.disabled = true;
-          confirmBtn.style.opacity = '0.5';
-          confirmBtn.style.cursor = 'not-allowed';
-        }
-      });
-
-      confirmBtn.addEventListener('click', async () => {
-        try {
-          confirmBtn.innerText = 'Suppression...';
-          confirmBtn.disabled = true;
-          
-          // Call the custom Postgres function to delete the user completely
-          const { error } = await supabase.rpc('delete_user_account');
-          
-          if (error) {
-            console.error("Erreur RPC:", error);
-            alert("Erreur lors de la suppression de votre compte. Veuillez réessayer.");
-            confirmBtn.innerText = 'Confirmer';
-            confirmBtn.disabled = false;
-            return;
-          }
-
-          // Effacer cookies et session client
-          await supabase.auth.signOut();
-          document.cookie = 'sb-access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-          document.cookie = 'sb-refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-          
-          alert("Votre compte a été supprimé avec succès.");
-          window.location.href = '/';
-
-        } catch (err) {
-          console.error(err);
-          alert("Une erreur inattendue est survenue.");
-        }
+      confirmBtn.addEventListener('click', () => {
+        // Just hide the modal, the mailto link will open the email client
+        setTimeout(() => {
+          modal.style.display = 'none';
+        }, 500);
       });
     }
   </script>
