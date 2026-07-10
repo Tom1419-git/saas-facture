@@ -42,12 +42,8 @@ const { data: profilesData } = await supabase
   .select('invoice_count');
 const totalInvoices = profilesData?.reduce((acc, p) => acc + (p.invoice_count || 0), 0) || 0;
 
-// 4. Recent users
-const { data: recentUsers } = await supabase
-  .from('profiles')
-  .select('*')
-  .order('created_at', { ascending: false })
-  .limit(10);
+// 4. Recent users (via RPC pour obtenir les emails de auth.users)
+const { data: recentUsers } = await supabase.rpc('get_admin_users');
 ---
 
 <Layout title="FactureArtisan | Admin Panel">
@@ -99,16 +95,16 @@ const { data: recentUsers } = await supabase
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>ID Profil</th>
+                  <th>Email Utilisateur</th>
                   <th>Date d'inscription</th>
                   <th>Statut Pro</th>
                   <th>Factures (Quota)</th>
                 </tr>
               </thead>
               <tbody>
-                {recentUsers.map(u => (
+                {recentUsers.map((u: any) => (
                   <tr>
-                    <td style="font-family: monospace; font-size: 0.8rem;">{u.id.split('-')[0]}...</td>
+                    <td style="font-weight: 500;">{u.email}</td>
                     <td>{new Date(u.created_at).toLocaleDateString('fr-CH')}</td>
                     <td>
                       {u.is_pro ? <span class="badge badge-pro">PRO</span> : <span class="badge badge-free">Gratuit</span>}
