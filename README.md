@@ -2,8 +2,9 @@
 
 > Générateur de factures professionnel, rapide et conforme pour artisans et indépendants.
 
-![FactureArtisan](https://facture.mayoraz-net.ch/favicon.svg) <!-- Remplacer par un vrai og-image plus tard -->
-
+<div align="center">
+  <img src="https://facture.mayoraz-net.ch/favicon.svg" alt="FactureArtisan Logo" width="120" />
+</div>
 **Site officiel :** [https://facture.mayoraz-net.ch](https://facture.mayoraz-net.ch)
 
 ## 📖 Présentation
