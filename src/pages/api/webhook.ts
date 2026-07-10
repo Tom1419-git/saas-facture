@@ -1,16 +1,13 @@
 import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { env } from "cloudflare:workers";
 
 export const POST: APIRoute = async (context) => {
   try {
-    // Dans Cloudflare, les variables d'environnement secrètes sont dans context.locals.runtime.env
-    // En dev local, on utilise import.meta.env comme fallback
-    const env = (context.locals as any).runtime?.env || import.meta.env;
-    
-    const stripeKey = env.STRIPE_SECRET_KEY;
-    const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
-    const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
+    const stripeKey = env.STRIPE_SECRET_KEY as string;
+    const webhookSecret = env.STRIPE_WEBHOOK_SECRET as string;
+    const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY as string;
 
     if (!stripeKey || !webhookSecret || !serviceRoleKey) {
       console.error("Missing environment variables for Stripe Webhook");

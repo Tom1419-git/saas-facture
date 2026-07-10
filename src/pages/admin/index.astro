@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase';
 import Stripe from 'stripe';
+import { env } from "cloudflare:workers";
 
 const accessToken = Astro.cookies.get('sb-access-token')?.value;
 const refreshToken = Astro.cookies.get('sb-refresh-token')?.value;
@@ -49,7 +50,6 @@ const { data: recentUsers } = await supabase.rpc('get_admin_users');
 // 5. Revenus Stripe (Balance)
 let stripeBalance = "0.00 CHF";
 try {
-  const env = (Astro.locals as any).runtime?.env || import.meta.env;
   const stripeKey = env.STRIPE_SECRET_KEY;
   if (stripeKey) {
     const stripe = new Stripe(stripeKey, {
