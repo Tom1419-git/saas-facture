@@ -11,6 +11,29 @@ const refreshToken = Astro.cookies.get('sb-refresh-token');
 if (!accessToken || !refreshToken) {
   return Astro.redirect('/login');
 }
+
+import { supabase } from '../lib/supabase';
+
+await supabase.auth.setSession({
+  access_token: accessToken.value,
+  refresh_token: refreshToken.value,
+});
+
+const { data: { user } } = await supabase.auth.getUser();
+
+let isPro = false;
+if (user) {
+  if (user.email === 'thomasmayoraz@yahoo.com') {
+    isPro = true;
+  } else {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_pro')
+      .eq('id', user.id)
+      .single();
+    isPro = profile?.is_pro || false;
+  }
+}
 ---
 
 <Layout title="FactureArtisan | Éditeur de facture">
@@ -25,7 +48,7 @@ if (!accessToken || !refreshToken) {
     <TemplateShowcase />
     
     <!-- Render React app exclusively on client-side to prevent SSR issues with @react-pdf/renderer -->
-    <InvoiceApp client:only="react" />
+    <InvoiceApp client:only="react" initialIsPro={isPro} />
   </div>
 </Layout>
 

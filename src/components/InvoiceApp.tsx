@@ -157,7 +157,7 @@ const InvoiceDocument = ({ data, isPro, qrPngUrl }: { data: any, isPro: boolean,
 };
 
 // --- MAIN REACT COMPONENT ---
-export default function InvoiceApp() {
+export default function InvoiceApp({ initialIsPro = false }: { initialIsPro?: boolean }) {
   const [data, setData] = useState({
     invoiceNumber: '',
     date: new Date().toISOString().split('T')[0],
@@ -182,34 +182,17 @@ export default function InvoiceApp() {
 
   const [isClient, setIsClient] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isPro, setIsPro] = useState(false);
+  const [isPro, setIsPro] = useState(initialIsPro);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est Pro au chargement
-    const checkProStatus = async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        if (userData.user.email === 'thomasmayoraz@yahoo.com') {
-          setIsPro(true);
-          return;
-        }
-
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_pro')
-          .eq('id', userData.user.id)
-          .single();
-        if (profile?.is_pro) {
-          setIsPro(true);
-        }
-      }
-    };
-    checkProStatus();
-  }, []);
+    // La vérification Pro est maintenant gérée côté serveur via initialIsPro
+    // On met à jour si la prop change (utile pour la réactivité)
+    setIsPro(initialIsPro);
+  }, [initialIsPro]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isPro) {
