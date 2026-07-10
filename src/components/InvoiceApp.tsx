@@ -105,7 +105,7 @@ export default function InvoiceApp() {
     senderIban: '',
     clientName: '',
     clientAddress: '',
-    taxRate: 7.7,
+    taxRate: 8.1,
     notes: '',
     items: [{ desc: 'Prestation de service', qty: 1, price: 100 }]
   });
