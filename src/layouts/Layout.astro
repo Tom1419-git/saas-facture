@@ -44,8 +44,9 @@ if (accessToken) {
         <nav>
           {userEmail ? (
             <div style="display: flex; align-items: center; gap: 15px;">
-              <span style="color: var(--text-muted); font-size: 0.9rem;">{userEmail}</span>
+              <span style="color: var(--text-muted); font-size: 0.9rem; display: none; @media (min-width: 600px) { display: inline; }">{userEmail}</span>
               <a href="/dashboard" class="btn btn-secondary" style="padding: 6px 14px;">Dashboard</a>
+              <button id="logout-btn" class="btn" style="padding: 6px 14px; background: rgba(255,50,50,0.1); color: #ff6b6b; border: 1px solid rgba(255,50,50,0.2);">Déconnexion</button>
             </div>
           ) : (
             <>
@@ -66,6 +67,25 @@ if (accessToken) {
         <p>&copy; {new Date().getFullYear()} FactureArtisan. Créé avec passion par <a href="https://mayoraz-net.ch" target="_blank" rel="noopener noreferrer">Thomas Mayoraz</a>.</p>
       </div>
     </footer>
+    
+    <script>
+      import { supabase } from '../lib/supabase';
+      
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async () => {
+          // 1. Clear Supabase auth session
+          await supabase.auth.signOut();
+          
+          // 2. Clear cookies
+          document.cookie = 'sb-access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie = 'sb-refresh-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          
+          // 3. Redirect to home
+          window.location.href = '/';
+        });
+      }
+    </script>
   </body>
 </html>
 
