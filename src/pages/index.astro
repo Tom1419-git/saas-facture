@@ -23,19 +23,92 @@ import TemplateShowcase from '../components/TemplateShowcase.astro';
         <div class="dots">
           <span></span><span></span><span></span>
         </div>
-        <div class="preview-title">Aperçu Facture</div>
+        <div class="preview-title">Aperçu — Modèle Pro</div>
+        <span class="preview-badge">✨ PRO</span>
       </div>
       <div class="preview-body">
-        <div class="skeleton title"></div>
-        <div class="skeleton-row">
-          <div class="skeleton box"></div>
-          <div class="skeleton box"></div>
+        <!-- Invoice mockup -->
+        <div class="inv-mock">
+
+          <!-- Header: Logo + Title + Client -->
+          <div class="inv-mock-header">
+            <div class="inv-mock-left">
+              <div class="inv-mock-logo">
+                <span>🏗️</span>
+                <strong>Dupont Construction</strong>
+              </div>
+              <div class="inv-mock-meta">
+                <span>Route de Genève 42, 1004 Lausanne</span>
+                <span>contact@dupont.ch</span>
+                <span>IBAN: CH56 0483 5012 3456 7800 9</span>
+              </div>
+            </div>
+            <div class="inv-mock-right">
+              <div class="inv-mock-title">FACTURE</div>
+              <div class="inv-mock-info">
+                <span>N° 2026-047</span>
+                <span>10 juillet 2026</span>
+              </div>
+              <div class="inv-mock-client">
+                <strong>Facturé à :</strong>
+                <span>M. Bernard Müller</span>
+                <span>Av. des Alpes 17</span>
+                <span>1200 Genève</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="inv-mock-table">
+            <div class="inv-mock-table-head">
+              <span class="col-desc">Description</span>
+              <span class="col-qty">Qté</span>
+              <span class="col-price">Prix U.</span>
+              <span class="col-total">Total</span>
+            </div>
+            <div class="inv-mock-row">
+              <span class="col-desc">Pose de carrelage salle de bain</span>
+              <span class="col-qty">1</span>
+              <span class="col-price">1 800 CHF</span>
+              <span class="col-total">1 800.00 CHF</span>
+            </div>
+            <div class="inv-mock-row">
+              <span class="col-desc">Fournitures et matériaux</span>
+              <span class="col-qty">1</span>
+              <span class="col-price">450 CHF</span>
+              <span class="col-total">450.00 CHF</span>
+            </div>
+            <div class="inv-mock-row">
+              <span class="col-desc">Main d'œuvre supplémentaire (4h)</span>
+              <span class="col-qty">4</span>
+              <span class="col-price">95 CHF</span>
+              <span class="col-total">380.00 CHF</span>
+            </div>
+          </div>
+
+          <!-- Totals -->
+          <div class="inv-mock-totals">
+            <div class="inv-mock-total-row">
+              <span>Sous-total :</span>
+              <span>2 630.00 CHF</span>
+            </div>
+            <div class="inv-mock-total-row">
+              <span>TVA (8.1%) :</span>
+              <span>213.03 CHF</span>
+            </div>
+            <div class="inv-mock-total-row grand">
+              <span>Total TTC :</span>
+              <span>2 843.03 CHF</span>
+            </div>
+          </div>
+
+          <div class="inv-mock-note">
+            Paiement sous 30 jours. Merci de votre confiance.
+          </div>
         </div>
-        <div class="skeleton line"></div>
-        <div class="skeleton line"></div>
-        <div class="skeleton line short"></div>
       </div>
     </div>
+
   </div>
 
   <section class="container" style="padding: 60px 24px; text-align: center;">
@@ -137,6 +210,17 @@ import TemplateShowcase from '../components/TemplateShowcase.astro';
     font-size: 0.8rem;
     color: var(--text-muted);
   }
+
+  .preview-badge {
+    background: var(--primary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
   
   .preview-body {
     padding: 30px;
@@ -145,35 +229,117 @@ import TemplateShowcase from '../components/TemplateShowcase.astro';
     gap: 20px;
   }
   
-  .skeleton {
-    background: rgba(255, 255, 255, 0.05);
+  .inv-mock {
+    background: #ffffff;
     border-radius: 4px;
+    padding: 24px;
+    color: #1a1a2e; /* Light theme text for invoice */
+    font-size: 0.75rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
   }
-  
-  .skeleton.title {
-    height: 30px;
-    width: 40%;
-    margin-bottom: 20px;
-  }
-  
-  .skeleton-row {
+
+  .inv-mock-header {
     display: flex;
-    gap: 20px;
+    justify-content: space-between;
     margin-bottom: 30px;
   }
-  
-  .skeleton.box {
-    height: 80px;
-    flex: 1;
+
+  .inv-mock-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
   }
-  
-  .skeleton.line {
-    height: 12px;
-    width: 100%;
+
+  .inv-mock-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: #6b6b80;
   }
-  
-  .skeleton.short {
-    width: 60%;
+
+  .inv-mock-right {
+    text-align: right;
+  }
+
+  .inv-mock-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--primary);
+    margin-bottom: 12px;
+  }
+
+  .inv-mock-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+    color: #6b6b80;
+  }
+
+  .inv-mock-client {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #f5f5f7;
+    padding: 12px;
+    border-radius: 4px;
+    text-align: left;
+  }
+
+  .inv-mock-table {
+    margin-bottom: 24px;
+  }
+
+  .inv-mock-table-head {
+    display: flex;
+    border-bottom: 2px solid #e2e2e8;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #6b6b80;
+  }
+
+  .inv-mock-row {
+    display: flex;
+    border-bottom: 1px solid #f5f5f7;
+    padding: 8px 0;
+  }
+
+  .col-desc { flex: 1; }
+  .col-qty { width: 40px; text-align: center; }
+  .col-price { width: 80px; text-align: right; }
+  .col-total { width: 90px; text-align: right; }
+
+  .inv-mock-totals {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    margin-bottom: 30px;
+  }
+
+  .inv-mock-total-row {
+    display: flex;
+    justify-content: space-between;
+    width: 200px;
+  }
+
+  .inv-mock-total-row.grand {
+    font-weight: bold;
+    font-size: 0.9rem;
+    border-top: 2px solid #e2e2e8;
+    padding-top: 8px;
+    margin-top: 4px;
+  }
+
+  .inv-mock-note {
+    color: #6b6b80;
+    font-style: italic;
+    border-top: 1px solid #f5f5f7;
+    padding-top: 16px;
   }
   
   /* Features */

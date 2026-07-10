@@ -47,7 +47,7 @@ const InvoiceDocument = ({ data, isPro }: { data: any, isPro: boolean }) => {
             color: '#000',
             zIndex: -1
           }}>
-            Généré avec facture.mayoraz-net.ch
+            Généré via FactureArtisan — facture.mayoraz-net.ch
           </Text>
         )}
         
